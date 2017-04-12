@@ -24,7 +24,7 @@ import com.rongyan.rongyanlibrary.util.PermissionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.ButterKnife;
+
 
 /**
  * 所有activity实现这个基类
@@ -56,9 +56,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             LayoutInflater inflater = getLayoutInflater();
             View inflate = inflater.inflate(getContentView(), null);
             setContentView(inflate);
-
-            //设置view注解
-            ButterKnife.bind(this, inflate);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();

@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 import com.rongyan.rongyanlibrary.R;
 
-import butterknife.ButterKnife;
+
 
 
 /**
@@ -45,7 +45,6 @@ public abstract class BaseFragment extends Fragment {
         if (getContentViewID() != 0) {
             int resId = getContentViewID();
             contentView = inflater.inflate(resId, container, false);
-            ButterKnife.bind(this, contentView);
             initViews(contentView);
             return contentView;
         } else {
