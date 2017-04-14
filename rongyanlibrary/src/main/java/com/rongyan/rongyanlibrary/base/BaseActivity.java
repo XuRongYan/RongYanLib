@@ -18,12 +18,14 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.rongyan.rongyanlibrary.R;
+import com.rongyan.rongyanlibrary.rxHttpHelper.http.ActivityLifeCycleEvent;
 import com.rongyan.rongyanlibrary.util.AppUtils;
 import com.rongyan.rongyanlibrary.util.PermissionListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.subjects.PublishSubject;
 
 
 /**
@@ -41,9 +43,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private static PermissionListener mListener;
 
+    public final PublishSubject<ActivityLifeCycleEvent> lifeCycleSubject = PublishSubject.create();
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        lifeCycleSubject.onNext(ActivityLifeCycleEvent.CREATE);
         super.onCreate(savedInstanceState);
 
         mContext = this;
@@ -70,8 +75,21 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        lifeCycleSubject.onNext(ActivityLifeCycleEvent.PAUSE);
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        lifeCycleSubject.onNext(ActivityLifeCycleEvent.STOP);
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+        lifeCycleSubject.onNext(ActivityLifeCycleEvent.DESTROY);
         mBaseAppManager.removeActivity(this);
     }
 
