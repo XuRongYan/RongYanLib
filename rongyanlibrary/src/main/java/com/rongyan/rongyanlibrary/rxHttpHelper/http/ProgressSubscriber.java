@@ -23,6 +23,7 @@ public abstract class ProgressSubscriber<T> extends Subscriber<T> implements Pro
     @Override
     public void onCompleted() {
         dismissProgressDialog();
+
     }
 
     public void showProgressDialog() {
@@ -65,4 +66,5 @@ public abstract class ProgressSubscriber<T> extends Subscriber<T> implements Pro
 
     protected abstract void _onNext(T t);
     protected abstract void _onError(String message);
+    protected abstract void _onCompleted();
 }

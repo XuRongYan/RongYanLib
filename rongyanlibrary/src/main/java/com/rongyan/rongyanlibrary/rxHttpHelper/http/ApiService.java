@@ -1,6 +1,7 @@
 package com.rongyan.rongyanlibrary.rxHttpHelper.http;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -36,17 +37,19 @@ public class ApiService {
     }
 
     private <S> S createService(Class<S> serviceClass) {
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor()
+                .setLevel(HttpLoggingInterceptor.Level.BODY);
+
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(logging)
+                .addInterceptor(interceptor)
+                .connectTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Url.BASE_URL)
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .client(client)
                 .build();
         return retrofit.create(serviceClass);
     }

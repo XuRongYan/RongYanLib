@@ -6,5 +6,5 @@ package com.rongyan.rongyanlibrary.rxHttpHelper.http;
  */
 
 public class Url {
-    public static final String BASE_URL = "http://139.224.164.183:8088/";
+    public static String BASE_URL = "";
 }
