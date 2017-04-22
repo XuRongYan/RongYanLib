@@ -24,14 +24,16 @@ public class HttpUtil {
     public void toSubscribe(Observable ob, final ProgressSubscriber subscriber, String cacheKey,
                             final ActivityLifeCycleEvent event,
                             final PublishSubject<ActivityLifeCycleEvent> lifecycleSubject,
-                            boolean isSave, boolean forceRefresh) {
+                            final boolean isSave, boolean forceRefresh, final boolean isShowDialog) {
         //数据预处理
         Observable.Transformer<HttpResult<Object>, Object> result = RxHelper.handleResult(event, lifecycleSubject);
         Observable observable = ob.compose(result)
                 .doOnSubscribe(new Action0() {
                     @Override
                     public void call() {
-                        subscriber.showProgressDialog();
+                        if (isShowDialog) {
+                            subscriber.showProgressDialog();
+                        }
                     }
                 });
         RetrofitCache.load(cacheKey, observable, isSave, forceRefresh).subscribe(subscriber);

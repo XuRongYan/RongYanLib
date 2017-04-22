@@ -5,5 +5,7 @@ package com.rongyan.rongyanlibrary.base;
  * Created by XRY on 2016/8/31.
  */
 public interface BasePresenter {
-    void start();
+    void subscribe();
+
+    void unsubscribe();
 }

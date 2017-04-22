@@ -52,7 +52,7 @@ public abstract class ProgressSubscriber<T> extends Subscriber<T> implements Pro
         } else if (e instanceof ApiException) {
             _onError(e.getMessage());
         } else {
-            _onError("请求失败，请稍后再试...");
+            _onError("请求失败，请稍后再试...\n" + "异常：" + e.toString());
         }
         dismissProgressDialog();
     }

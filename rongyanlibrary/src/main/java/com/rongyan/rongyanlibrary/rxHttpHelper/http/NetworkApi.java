@@ -1,7 +1,9 @@
 package com.rongyan.rongyanlibrary.rxHttpHelper.http;
 
-import com.rongyan.rongyanlibrary.rxHttpHelper.postEntity.LoginPost;
+import com.rongyan.rongyanlibrary.rxHttpHelper.entity.User;
 import com.rongyan.rongyanlibrary.rxHttpHelper.postEntity.RegisterPost;
+
+import org.json.JSONObject;
 
 import retrofit2.http.Body;
 import retrofit2.http.Field;
@@ -14,9 +16,9 @@ import rx.Observable;
  */
 
 public interface NetworkApi {
-
+    @FormUrlEncoded
     @POST("CheckLogin.aspx")
-    Observable<HttpResult> login(@Body LoginPost loginPost);
+    Observable<HttpResult<User>> login(@Field("")JSONObject jsonObject);
 
     @POST("UserRegister.aspx")
     Observable<HttpResult> register(@Body RegisterPost registerPost);

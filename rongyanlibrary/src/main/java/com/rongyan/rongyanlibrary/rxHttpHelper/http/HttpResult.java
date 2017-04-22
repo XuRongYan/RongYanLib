@@ -7,7 +7,7 @@ package com.rongyan.rongyanlibrary.rxHttpHelper.http;
 public class HttpResult<T> {
     private int resultCode;
     private String resultMessage;
-    private T data;
+    private T resultData;
 
     public int getResultCode() {
         return resultCode;
@@ -26,10 +26,10 @@ public class HttpResult<T> {
     }
 
     public T getData() {
-        return data;
+        return resultData;
     }
 
     public void setData(T data) {
-        this.data = data;
+        this.resultData = data;
     }
 }
