@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">AiKanVideo</string>
+    <string name="username">用户名</string>
+    <string name="psw">密码</string>
+    <string name="forget_psw">忘记密码？</string>
+    <string name="register">点击注册</string>
+    <string name="login">登  录</string>
+    <string name="text_one_more_click">再按一次退出</string>
+    <string name="string_username_required">用户名不得为空</string>
+    <string name="string_invalid_username">用户名不合法</string>
+    <string name="string_invalid_psw">密码不合法</string>
+    <string name="string_psw_required">密码不得为空</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="string_main">首页</string>
+    <string name="string_search">Search</string>
+
+</resources>

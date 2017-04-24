@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#fb6400</color>
+    <color name="colorPrimaryDark">#fb6400</color>
+    <color name="colorAccent">#fb6400</color>
+    <color name="titleTextColor">#ffffff</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="colorLightGray">#EEEEEE</color>
+    <color name="colorTextGray">#787878</color>
+    <color name="colorButtonGray">#737373</color>
+</resources>

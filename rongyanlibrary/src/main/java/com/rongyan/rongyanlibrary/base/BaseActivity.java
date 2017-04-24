@@ -4,6 +4,7 @@ import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,10 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 
-import com.rongyan.rongyanlibrary.R;
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.ActivityLifeCycleEvent;
 import com.rongyan.rongyanlibrary.util.AppUtils;
 import com.rongyan.rongyanlibrary.util.PermissionListener;
@@ -25,6 +23,7 @@ import com.rongyan.rongyanlibrary.util.PermissionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
 import rx.subjects.PublishSubject;
 
 
@@ -61,17 +60,19 @@ public abstract class BaseActivity extends AppCompatActivity {
             LayoutInflater inflater = getLayoutInflater();
             View inflate = inflater.inflate(getContentView(), null);
             setContentView(inflate);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = this.getWindow();
-            //需要设置这个 flag 才能调用 setStatusBarColor 来设置状态栏颜色
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            //设置状态栏颜色
-            window.setStatusBarColor(this.getResources().getColor(R.color.colorDarkGray));
+            ButterKnife.bind(this, inflate);
         }
 
-        AppUtils.hideKeyboard(this);
+        //5.0以上的沉浸式状态栏
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+
+
         initViews();
+        AppUtils.hideKeyboard(this);
+
     }
 
     @Override
