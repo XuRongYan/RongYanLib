@@ -3,6 +3,7 @@ package com.rongyan.aikanvideo.login;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.rongyan.aikanvideo.bean.LoginUser;
 import com.rongyan.aikanvideo.R;
 import com.rongyan.rongyanlibrary.rxHttpHelper.entity.User;
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.ActivityLifeCycleEvent;
@@ -10,9 +11,6 @@ import com.rongyan.rongyanlibrary.rxHttpHelper.http.ApiService;
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.HttpUtil;
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.NetworkApi;
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.ProgressSubscriber;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -66,19 +64,14 @@ public class LoginPresenter implements LoginContract.Presenter {
         }
 
         if (!cancel) {
-            JSONObject jsonObject = new JSONObject();
-            try {
-                jsonObject.put("cellphone", username);
-                jsonObject.put("password", psw);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+
             ApiService apiService = new ApiService();
-            Observable observable = apiService.getService(NetworkApi.class).login(jsonObject);
+            Observable observable = apiService.getService(NetworkApi.class).login(username, psw);
 
             HttpUtil.getInstance().toSubscribe(observable, new ProgressSubscriber<User>(context) {
                 @Override
                 protected void _onNext(User user) {
+                    LoginUser.user = user;
                     mView.onLoginSuc();
                 }
 
@@ -91,7 +84,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                 protected void _onCompleted() {
 
                 }
-            }, "user", ActivityLifeCycleEvent.PAUSE, lifeCycleSubject, false, false, true);
+            }, "user", ActivityLifeCycleEvent.PAUSE, lifeCycleSubject, true, false, true);
         }
     }
 }

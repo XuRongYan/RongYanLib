@@ -19,11 +19,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/medium_margin"
         android:hint="@string/username"
+
         >
 
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -39,6 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
+            android:textColor="@color/black"
             />
     </android.support.design.widget.TextInputLayout>
 
@@ -51,7 +54,7 @@
             android:id="@+id/login_forget_psw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/titleTextColor"
+            android:textColor="@color/colorPrimary"
             android:text="@string/forget_psw"/>
 
         <TextView
@@ -59,19 +62,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:textColor="@color/titleTextColor"
+            android:textColor="@color/colorPrimary"
             android:text="@string/register"/>
     </RelativeLayout>
 
     <Button
         android:id="@+id/btn_login"
-        android:layout_marginTop="@dimen/large_margin"
-        android:background="@drawable/tochable_orange"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/large_margin"
+        android:background="@drawable/tochable_orange"
         android:text="@string/login"
         android:textColor="@color/white"
-        android:textSize="@dimen/text_size_medium"
-        />
+        android:textSize="@dimen/text_size_medium" />
 
 </LinearLayout>

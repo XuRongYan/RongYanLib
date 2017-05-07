@@ -38,16 +38,11 @@
                     android:layout_height="0dp"
                     android:layout_weight="1" />
 
-                <android.support.design.widget.TabLayout
-                    android:id="@+id/main_tab"
+
+                <net.lucode.hackware.magicindicator.MagicIndicator
+                    android:id="@+id/main_indicator"
                     android:layout_width="match_parent"
-                    android:layout_height="58dp"
-                    android:paddingBottom="8dp"
-                    app:tabGravity="fill"
-                    app:tabIndicatorHeight="0dp"
-                    app:tabMode="fixed"
-                    app:tabSelectedTextColor="@color/colorPrimary"
-                    app:tabTextColor="@color/colorTextGray" />
+                    android:layout_height="50dp" />
 
             </LinearLayout>
 
@@ -60,7 +55,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:headerLayout="@layout/nav_header"
         app:itemTextColor="@color/colorTextGray"
         app:menu="@menu/drawer_actions" />
 

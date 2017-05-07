@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.orhanobut.hawk.Hawk;
 import com.rongyan.aikanvideo.R;
 import com.rongyan.aikanvideo.main.MainActivity;
+import com.rongyan.aikanvideo.register.RegisterActivity;
+import com.rongyan.rongyanlibrary.base.BaseAppManager;
 import com.rongyan.rongyanlibrary.base.BaseFragment;
 import com.rongyan.rongyanlibrary.rxHttpHelper.entity.User;
 import com.rongyan.rongyanlibrary.util.AppUtils;
@@ -97,7 +99,8 @@ public class LoginFragment extends BaseFragment implements LoginContract.View {
 
     @Override
     public void onLoginSuc() {
-        ToastUtils.showShort(getContext(), "success");
+        BaseAppManager.getInstance().clearAll();
+        goActivity(MainActivity.class);
     }
 
     @Override
@@ -131,12 +134,15 @@ public class LoginFragment extends BaseFragment implements LoginContract.View {
         mPresenter.unsubscribe();
     }
 
-    @OnClick({R.id.btn_login})
+    @OnClick({R.id.btn_login, R.id.login_register})
     public void click(View view) {
         switch (view.getId()) {
             case R.id.btn_login:
-                //mPresenter.login();
-                goActivity(MainActivity.class);
+                mPresenter.login();
+                //goActivity(MainActivity.class);
+                break;
+            case R.id.login_register:
+                goActivity(RegisterActivity.class);
                 break;
         }
     }

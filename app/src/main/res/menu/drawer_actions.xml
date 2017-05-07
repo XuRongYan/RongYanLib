@@ -17,14 +17,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/icon1"
-            android:icon="@mipmap/ic_launcher"
-            android:title="@string/app_name"/>
+            android:id="@+id/my_history"
+            android:icon="@drawable/history"
+            android:title="@string/history"/>
 
         <item
-            android:id="@+id/icon2"
-            android:icon="@mipmap/ic_launcher"
-            android:title="@string/app_name"/>
+            android:id="@+id/my_collect"
+            android:icon="@drawable/collect"
+            android:title="@string/my_collection"/>
+
+        <item
+            android:id="@+id/me_download"
+            android:icon="@drawable/download"
+            android:title="@string/download"/>
+
+        <item
+            android:id="@+id/my_setting"
+            android:icon="@drawable/setting"
+            android:title="@string/setting"/>
+
     </group>
 
 </menu>

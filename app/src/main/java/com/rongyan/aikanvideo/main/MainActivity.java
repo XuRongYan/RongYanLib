@@ -2,20 +2,31 @@ package com.rongyan.aikanvideo.main;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.View;
 
+import com.rongyan.aikanvideo.bean.LoginUser;
 import com.rongyan.aikanvideo.R;
 import com.rongyan.aikanvideo.adapter.MainViewPagerAdapter;
+import com.rongyan.aikanvideo.adapter.MyIndicatorAdapter;
 import com.rongyan.aikanvideo.find.FindFragment;
+import com.rongyan.aikanvideo.login.LoginActivity;
 import com.rongyan.aikanvideo.order.OrderFragment;
 import com.rongyan.rongyanlibrary.base.BaseActivity;
+import com.rongyan.rongyanlibrary.base.BaseAppManager;
 import com.rongyan.rongyanlibrary.base.BaseFragment;
+import com.rongyan.rongyanlibrary.util.ToastUtils;
+
+import net.lucode.hackware.magicindicator.MagicIndicator;
+import net.lucode.hackware.magicindicator.ViewPagerHelper;
+import net.lucode.hackware.magicindicator.buildins.commonnavigator.CommonNavigator;
 
 import java.util.ArrayList;
 
@@ -25,21 +36,23 @@ import butterknife.ButterKnife;
 public class MainActivity extends BaseActivity {
     @Bind(R.id.main_viewpager)
     ViewPager mainViewpager;
-    @Bind(R.id.main_tab)
-    TabLayout mainTab;
     @Bind(R.id.toolbar)
-    Toolbar toolbar;
+    public Toolbar toolbar;
     @Bind(R.id.main_nav)
     NavigationView mainNav;
     @Bind(R.id.main_drawer)
     DrawerLayout mainDrawer;
+    @Bind(R.id.main_indicator)
+    MagicIndicator mainIndicator;
 
+    private long exitTime = 0;
     ArrayList<BaseFragment> fragments = new ArrayList<>();
+    ArrayList<String> titleList = new ArrayList<>();
+    private BaseFragment mainFragment;
+    private BaseFragment findFragment;
+    private BaseFragment orderFragment;
 
 
-    private TabLayout.Tab one;
-    private TabLayout.Tab two;
-    private TabLayout.Tab three;
 
     @Override
     protected int getContentView() {
@@ -53,34 +66,53 @@ public class MainActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        View header = LayoutInflater.from(this).inflate(R.layout.nav_header, null);
+        View headerNotLogin = LayoutInflater.from(this).inflate(R.layout.nav_header_not_login, null);
+        headerNotLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goActivity(LoginActivity.class);
+            }
+        });
+
+        if (LoginUser.user == null) {
+            if (mainNav.getHeaderCount() != 0) {
+                mainNav.removeView(headerNotLogin);
+                mainNav.removeView(header);
+            }
+            mainNav.addHeaderView(headerNotLogin);
+        } else {
+            if (mainNav.getHeaderCount() != 0) {
+                mainNav.removeView(header);
+                mainNav.removeView(headerNotLogin);
+            }
+            mainNav.addHeaderView(header);
+        }
+
+        titleList.add("首页");
+        titleList.add("发现");
+        titleList.add("订阅");
+        mainNav.setItemIconTintList(null);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mainDrawer, toolbar, 0, 0);
         mainDrawer.addDrawerListener(toggle);
         toggle.syncState();
-        BaseFragment mainFragment = MainFragment.newInstance();
-        BaseFragment findFragment = FindFragment.newInstance();
-        BaseFragment orderFragment = OrderFragment.newInstance();
+        mainFragment = MainFragment.newInstance();
+        findFragment = FindFragment.newInstance();
+        orderFragment = OrderFragment.newInstance();
 
         fragments.add(mainFragment);
         fragments.add(findFragment);
         fragments.add(orderFragment);
 
-        mainViewpager.setAdapter(new MainViewPagerAdapter(getSupportFragmentManager(), fragments));
-        mainTab.setupWithViewPager(mainViewpager);
+        mainViewpager.setAdapter(new MainViewPagerAdapter(getSupportFragmentManager(), fragments, titleList));
+        ViewPagerHelper.bind(mainIndicator, mainViewpager);
+        CommonNavigator commonNavigator = new CommonNavigator(this);
+        commonNavigator.setAdapter(new MyIndicatorAdapter(this, mainViewpager));
+        commonNavigator.setAdjustMode(true);
 
-        one = mainTab.getTabAt(0);
-        two = mainTab.getTabAt(1);
-        three = mainTab.getTabAt(2);
-
-        assert one != null;
-        assert two != null;
-        assert three != null;
-
-        one.setIcon(R.mipmap.home);
-        two.setIcon(R.mipmap.found);
-        three.setIcon(R.mipmap.subscribe);
-
-        initEvents();
+        mainIndicator.setNavigator(commonNavigator);
+        initPresenter();
     }
 
     @Override
@@ -89,6 +121,8 @@ public class MainActivity extends BaseActivity {
         return true;
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,40 +130,34 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
     }
 
-    private void initEvents() {
-        mainTab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (tab == mainTab.getTabAt(0)) {
-                    one.setIcon(R.mipmap.home_select);
-                    mainViewpager.setCurrentItem(0);
-                } else if (tab == mainTab.getTabAt(1)) {
-                    two.setIcon(R.mipmap.found_select);
-                    mainViewpager.setCurrentItem(1);
-                } else if (tab == mainTab.getTabAt(2)) {
-                    three.setIcon(R.mipmap.subscribe_select);
-                    mainViewpager.setCurrentItem(2);
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                if (tab == mainTab.getTabAt(0)) {
-                    one.setIcon(R.mipmap.home);
-                    mainViewpager.setCurrentItem(0);
-                } else if (tab == mainTab.getTabAt(1)) {
-                    two.setIcon(R.mipmap.found);
-                    mainViewpager.setCurrentItem(1);
-                } else if (tab == mainTab.getTabAt(2)) {
-                    three.setIcon(R.mipmap.subscribe);
-                    mainViewpager.setCurrentItem(2);
-                }
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
+    private void initPresenter() {
+        new MainPresenter((MainContract.View) mainFragment, this);
     }
+
+
+    /**
+     * 按两次BACK键退出程序
+     *
+     * @param keyCode
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (System.currentTimeMillis() - exitTime > 2000) {
+                ToastUtils.showShort(this, getString(R.string.text_one_more_click));
+                exitTime = System.currentTimeMillis();
+            } else {
+                BaseAppManager.getInstance().clearAll();
+                System.exit(0);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+
+
+
 }

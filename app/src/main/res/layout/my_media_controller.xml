@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/video_player_bg_color">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:background="#77000000">
+
+        <ImageView
+            android:id="@+id/mediacontroller_back"
+            android:layout_width="34dp"
+
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/mediacontroller_filename"
+            style="@style/MediaController_Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/mediacontroller_back"
+            android:ellipsize="marquee"
+            android:maxLines="1"
+            android:text="filename" />
+
+        <ImageView
+            android:id="@+id/mediacontroller_share"
+            android:layout_width="34dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:padding="5dp"
+            android:src="@drawable/share" />
+
+        <ImageView
+            android:id="@+id/mediacontroller_download"
+            android:layout_width="34dp"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/mediacontroller_share"
+            android:padding="5dp"
+            android:src="@drawable/download_player" />
+
+        <ImageView
+            android:id="@+id/mediacontroller_collect"
+            android:layout_width="34dp"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/mediacontroller_download"
+            android:padding="5dp"
+            android:src="@drawable/collect_player" />
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/mediacontroller_center_play_or_pause"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/pause"
+        android:layout_centerInParent="true"
+        android:background="#77000000"
+        android:visibility="gone"/>
+
+    <FrameLayout
+        android:id="@+id/mediacontroller_volume"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_centerInParent="true"
+        android:background="#77000000"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/volume_none"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/mediacontroller_brightness"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_centerInParent="true"
+        android:background="#77000000"
+        android:visibility="gone">
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/mediacontroller_index"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_centerInParent="true"
+        android:background="#77000000"
+        android:visibility="gone">
+
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:background="#77000000"
+        android:layout_alignParentBottom="true">
+
+        <ImageView
+            android:id="@+id/mediacontroller_play_or_pause"
+            android:layout_width="34dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/pause"
+            android:padding="8dp"/>
+        
+        <SeekBar
+            android:id="@+id/mediacontroller_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/mediacontroller_play_or_pause"
+            android:layout_toLeftOf="@+id/mediacontroller_danmu"/>
+
+        <ImageView
+            android:id="@+id/mediacontroller_danmu"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/danmu_open"
+            android:padding="5dp"
+            android:layout_toStartOf="@+id/mediacontroller_screen" />
+
+        <ImageView
+            android:id="@+id/mediacontroller_screen"
+            android:layout_width="34dp"
+            android:src="@drawable/normal_screen"
+            android:layout_height="match_parent"
+            android:padding="5dp"
+            android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
+
+</RelativeLayout>

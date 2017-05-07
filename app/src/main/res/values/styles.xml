@@ -7,11 +7,19 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@color/titleTextColor</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:listDivider">@drawable/divider</item>
 
     </style>
 
     <style name="ToolBarTheme" parent="AppTheme">
 
+    </style>
+
+    <style name="MediaController_Text">
+        <item name="android:textColor">#ffffffff</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>

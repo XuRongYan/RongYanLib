@@ -17,15 +17,21 @@
             android:name="BaseUrl"
             android:value="http://139.224.164.183:1031/" />
 
-        <activity android:name=".login.LoginActivity">
+        <activity android:name=".login.LoginActivity" />
+        <activity
+            android:name=".main.MainActivity"
+            android:label="@string/string_main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".main.MainActivity"
-           android:label="@string/string_main"/>
+        <activity android:name=".classification.ClassificationActivity" />
+        <activity android:name=".register.RegisterActivity" />
+        <activity android:name=".guessYouLike.GuessYouLikeActivity" />
+        <activity android:name=".hotPlay.HotPlayActivity" />
+        <activity android:name=".rank.RankActivity"></activity>
     </application>
 
 </manifest>

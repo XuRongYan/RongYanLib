@@ -3,6 +3,7 @@ package com.rongyan.rongyanlibrary.rxHttpHelper.http;
 import android.content.Context;
 
 import com.rongyan.rongyanlibrary.util.AppUtils;
+import com.rongyan.rongyanlibrary.util.LogUtils;
 import com.rongyan.rongyanlibrary.widget.SimpleLoadDialog;
 
 import rx.Subscriber;
@@ -53,6 +54,7 @@ public abstract class ProgressSubscriber<T> extends Subscriber<T> implements Pro
             _onError(e.getMessage());
         } else {
             _onError("请求失败，请稍后再试...\n" + "异常：" + e.toString());
+            LogUtils.d("OKHttp", "exception", e.toString());
         }
         dismissProgressDialog();
     }
