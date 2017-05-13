@@ -2,20 +2,23 @@ package com.rongyan.aikanvideo.main;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
-import com.rongyan.aikanvideo.bean.LoginUser;
 import com.rongyan.aikanvideo.R;
 import com.rongyan.aikanvideo.adapter.MainViewPagerAdapter;
 import com.rongyan.aikanvideo.adapter.MyIndicatorAdapter;
+import com.rongyan.aikanvideo.bean.LoginUser;
 import com.rongyan.aikanvideo.find.FindFragment;
 import com.rongyan.aikanvideo.login.LoginActivity;
 import com.rongyan.aikanvideo.order.OrderFragment;
@@ -33,7 +36,7 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements SearchView.OnQueryTextListener {
     @Bind(R.id.main_viewpager)
     ViewPager mainViewpager;
     @Bind(R.id.toolbar)
@@ -51,7 +54,7 @@ public class MainActivity extends BaseActivity {
     private BaseFragment mainFragment;
     private BaseFragment findFragment;
     private BaseFragment orderFragment;
-
+    private SearchView searchView;
 
 
     @Override
@@ -118,10 +121,20 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar, menu);
+        MenuItem item = menu.findItem(R.id.search);
+        searchView = (SearchView) MenuItemCompat.getActionView(item);
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.search:
 
+                break;
+        }
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,6 +171,15 @@ public class MainActivity extends BaseActivity {
     }
 
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
 
+        return true;
+    }
 
+    @Override
+    public boolean onQueryTextChange(String newText) {
+
+        return false;
+    }
 }

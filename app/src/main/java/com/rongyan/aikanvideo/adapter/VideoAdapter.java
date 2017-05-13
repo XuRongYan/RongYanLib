@@ -95,18 +95,16 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
     }
 
     public void addHeaderView(View view) {
-        if (hasHeaderView()) {
-            throw new IllegalStateException("header view is already exists");
-        } else {
-            //避免产生自适应
-            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-            view.setLayoutParams(params);
-            headerView = view;
-            ifGridLayoutManager();
-            notifyItemInserted(0);
-        }
+
+        //避免产生自适应
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        view.setLayoutParams(params);
+        headerView = view;
+        ifGridLayoutManager();
+        notifyItemInserted(0);
+
     }
 
     public void addFooterView(View view) {
@@ -161,8 +159,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder> 
     }
 
 
-
-    static class ViewHolder extends RecyclerView.ViewHolder{
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ViewHolder(View itemView) {
             super(itemView);
