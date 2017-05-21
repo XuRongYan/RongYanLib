@@ -42,9 +42,9 @@ public class RxHelper {
                     public Observable<T> call(HttpResult<T> tHttpResult) {
                         LogUtils.e(this.getClass().getName(), "RxHelper", tHttpResult.getResultCode() + "");
                         //如果code等于0则成功创建数据，否则交给自定义异常处理
-                        if (tHttpResult.getResultCode() == 1) {
-                            return createData(tHttpResult.getData());
-                        }else {
+                        if (tHttpResult.getResultCode() == 1 || tHttpResult.getResultCode() == 101 || tHttpResult.getResultCode() == 100) {
+                            return createData(tHttpResult.getData(), tHttpResult.getResultCode());
+                        } else {
                             return Observable.error(new ApiException(tHttpResult.getResultCode()));
                         }
                     }
@@ -57,13 +57,14 @@ public class RxHelper {
         };
     }
 
-    private static <T> Observable<T> createData(final T data) {
+    private static <T> Observable<T> createData(final T data, int resutCode) {
         //TODO create方法过时了，试试用官方推荐的unsafeCreate，不知道有什么区别
         return Observable.unsafeCreate(new Observable.OnSubscribe<T>() {
             @Override
             public void call(Subscriber<? super T> subscriber) {
                 try {
                     subscriber.onNext(data);
+
                     subscriber.onCompleted();
                 } catch (Exception e) {
                     subscriber.onError(e);

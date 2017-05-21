@@ -1,5 +1,6 @@
 package com.rongyan.rongyanlibrary.util;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -25,6 +26,11 @@ public class TimeUtils {
      */
     public static String getTime(long timeInMillis, SimpleDateFormat dateFormat) {
         return dateFormat.format(new Date(timeInMillis));
+    }
+
+    public static long getTime(String time, SimpleDateFormat dateFormat) throws ParseException {
+        Date date = dateFormat.parse(time);
+        return date.getTime();
     }
 
     /**

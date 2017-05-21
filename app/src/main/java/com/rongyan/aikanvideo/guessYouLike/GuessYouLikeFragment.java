@@ -40,11 +40,10 @@ public class GuessYouLikeFragment extends BaseFragment implements GuessYouLikeCo
 
     @Override
     protected void initViews(View rootView) {
-        View headerView = LayoutInflater.from(getContext()).inflate(R.layout.guess_you_like_header, null);
-        VideoAdapter adapter = new VideoAdapter(list);
+        VideoAdapter videoAdapter = new VideoAdapter(getActivity(), list, guessYouLikeRecycler);
         guessYouLikeRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        guessYouLikeRecycler.setAdapter(adapter);
-        adapter.addHeaderView(headerView);
+        guessYouLikeRecycler.setAdapter(videoAdapter);
+        videoAdapter.addHeaderView(R.layout.guess_you_like_header);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class RankActivity extends BaseActivity {
     }
 
     @Override
-    protected void initViews() {
+    protected void initViews(Bundle savedInstanceState) {
         toolbar.setTitle(R.string.string_rank);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();

@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import com.rongyan.aikanvideo.R;
 import com.rongyan.aikanvideo.adapter.RankAdapter;
 import com.rongyan.rongyanlibrary.base.BaseFragment;
-import com.rongyan.rongyanlibrary.commonAdapter_recyclerView.MyDecoration;
 import com.rongyan.rongyanlibrary.rxHttpHelper.entity.Rank;
 
 import java.util.ArrayList;
@@ -46,7 +45,6 @@ public class HotPlayFragment extends BaseFragment implements HotPlayContract.Vie
         RankAdapter adapter = new RankAdapter(getContext(), list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new MyDecoration(getContext(), MyDecoration.VERTICAL_LIST));
     }
 
     @Override

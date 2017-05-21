@@ -25,7 +25,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     @Override
-    protected void initViews() {
+    protected void initViews(Bundle savedInstanceState) {
         ButterKnife.bind(this);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);

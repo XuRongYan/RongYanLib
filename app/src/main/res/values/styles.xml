@@ -8,9 +8,8 @@
         <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:searchViewStyle" tools:targetApi="lollipop">@style/MySearchViewStyle</item>
         <item name="android:textColorPrimary">@color/titleTextColor</item>
-        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
         <item name="android:listDivider">@drawable/divider</item>
-
     </style>
 
     <style name="ToolBarTheme" parent="AppTheme">
@@ -26,5 +25,20 @@
     <style name="MySearchViewStyle" parent="Widget.AppCompat.SearchView">
         <item name="queryBackground">@color/white</item>
     </style>
+
+    <style name="MaterialSearchViewStyle">
+        <item name="searchBackground">@color/white_ish</item>
+        <item name="searchVoiceIcon">@drawable/ic_action_voice_search</item>
+        <item name="searchCloseIcon">@drawable/ic_action_navigation_close</item>
+        <item name="searchBackIcon">@drawable/ic_action_navigation_arrow_back</item>
+        <item name="searchSuggestionBackground">@color/colorPrimary</item>
+        <item name="searchBarHeight">?attr/actionBarSize</item>
+        <item name="voiceHintPrompt">@string/hint_prompt</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorHint">@color/gray_50</item>
+        <item name="android:hint">@string/search_hint</item>
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
 
 </resources>

@@ -3,4 +3,19 @@
     <style name="ToolBarTheme" parent="AppTheme">
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+    <style name="ToolBarStyle" >
+        <item name="android:fitsSystemWindows">false</item>
+    </style>
+
+    <style name="ImageViewStyle">
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <style name="CollapsingToolbarStyle">
+        <item name="android:fitsSystemWindows">false</item>
+    </style>
+
+    <style name="AppBarStyle">
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
 </resources>

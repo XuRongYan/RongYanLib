@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.rongyan.aikanvideo.R;
+import com.rongyan.aikanvideo.search.SearchActivity;
 import com.rongyan.rongyanlibrary.base.BaseActivity;
 import com.rongyan.rongyanlibrary.util.ActivityUtils;
 
@@ -24,7 +25,7 @@ public class ClassificationActivity extends BaseActivity {
     }
 
     @Override
-    protected void initViews() {
+    protected void initViews(Bundle savedInstanceState) {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             title = bundle.getString("title");
@@ -38,11 +39,11 @@ public class ClassificationActivity extends BaseActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        ClassificationFragment fragment = (ClassificationFragment) getSupportFragmentManager()
+        ClassTabFragment fragment = (ClassTabFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.frame_classification);
 
         if (fragment == null) {
-            fragment = ClassificationFragment.newInstance();
+            fragment = ClassTabFragment.newInstance();
             ActivityUtils.addFragmentToActivity(getSupportFragmentManager(),
                     fragment, R.id.frame_classification);
 
@@ -50,7 +51,7 @@ public class ClassificationActivity extends BaseActivity {
             ActivityUtils.showFragment(getSupportFragmentManager(), fragment);
         }
 
-
+        new ClassificationPresenter(fragment, this, lifeCycleSubject);
 
     }
 
@@ -72,6 +73,9 @@ public class ClassificationActivity extends BaseActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                break;
+            case R.id.search:
+                goActivity(SearchActivity.class);
                 break;
         }
         return true;

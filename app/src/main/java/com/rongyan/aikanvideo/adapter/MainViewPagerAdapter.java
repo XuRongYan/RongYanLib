@@ -6,18 +6,18 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import com.rongyan.rongyanlibrary.base.BaseFragment;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by XRY on 2017/4/23.
  */
 
 public class MainViewPagerAdapter extends FragmentPagerAdapter{
-    ArrayList<BaseFragment> fragments;
+    List<BaseFragment> fragments;
 
-    ArrayList<String> titleList;
+    List<String> titleList;
 
-    public MainViewPagerAdapter(FragmentManager fm, ArrayList<BaseFragment> fragments, ArrayList<String> titleList) {
+    public MainViewPagerAdapter(FragmentManager fm, List<BaseFragment> fragments, List<String> titleList) {
         super(fm);
         this.fragments = fragments;
         this.titleList = titleList;

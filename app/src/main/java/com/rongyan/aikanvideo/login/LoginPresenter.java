@@ -3,7 +3,7 @@ package com.rongyan.aikanvideo.login;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.rongyan.aikanvideo.bean.LoginUser;
+import com.linxiao.commondevlib.util.PreferencesUtil;
 import com.rongyan.aikanvideo.R;
 import com.rongyan.rongyanlibrary.rxHttpHelper.entity.User;
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.ActivityLifeCycleEvent;
@@ -48,7 +48,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void login() {
-        String username = mView.getUsername();
+        final String username = mView.getUsername();
         String psw = mView.getPsw();
 
         boolean cancel = false;
@@ -70,8 +70,10 @@ public class LoginPresenter implements LoginContract.Presenter {
 
             HttpUtil.getInstance().toSubscribe(observable, new ProgressSubscriber<User>(context) {
                 @Override
-                protected void _onNext(User user) {
-                    LoginUser.user = user;
+                protected void _onNext(User result) {
+
+                    PreferencesUtil.reset(context);
+                    PreferencesUtil.put(context, "user", result);
                     mView.onLoginSuc();
                 }
 

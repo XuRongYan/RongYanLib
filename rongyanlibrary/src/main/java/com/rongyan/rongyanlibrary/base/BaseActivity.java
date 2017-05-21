@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.ActivityLifeCycleEvent;
-import com.rongyan.rongyanlibrary.util.AppUtils;
 import com.rongyan.rongyanlibrary.util.PermissionListener;
 
 import java.util.ArrayList;
@@ -68,9 +67,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
 
-
-        initViews();
-        AppUtils.hideKeyboard(this);
+        initViews(savedInstanceState);
+        //AppUtils.hideKeyboard(this);
 
     }
 
@@ -100,7 +98,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract int getContentView();
 
-    protected abstract void initViews();
+    protected abstract void initViews(Bundle savedInstanceState);
 
     /**
      * ----------------implements methods in BaseView--------------------------------------

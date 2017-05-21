@@ -14,9 +14,12 @@ import com.rongyan.rongyanlibrary.util.LogUtils;
  */
 
 public class BaseApplication extends Application {
+    public static final int PER_PAGE = 20;
     @Override
     public void onCreate() {
         super.onCreate();
+//        CrashHandler crashHandler = CrashHandler.getInstance();
+//        crashHandler.init(getApplicationContext());
         /**
          * 初始化Hawk数据库
          */

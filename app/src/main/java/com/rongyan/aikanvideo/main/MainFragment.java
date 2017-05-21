@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,7 +20,10 @@ import com.rongyan.aikanvideo.adapter.ImageAdapter;
 import com.rongyan.aikanvideo.adapter.VideoAdapter;
 import com.rongyan.aikanvideo.classification.ClassificationActivity;
 import com.rongyan.aikanvideo.handler.ImageHandler;
+import com.rongyan.aikanvideo.video.VideoActivity;
 import com.rongyan.aikanvideo.widget.ScaleCircleNavigator;
+import com.rongyan.rongyanlibrary.CommonAdapter.CommonAdapter;
+import com.rongyan.rongyanlibrary.CommonAdapter.ViewHolder;
 import com.rongyan.rongyanlibrary.base.BaseFragment;
 import com.rongyan.rongyanlibrary.rxHttpHelper.entity.Video;
 
@@ -51,6 +55,8 @@ public class MainFragment extends BaseFragment implements MainContract.View {
     LinearLayout mainNews;
     @Bind(R.id.main_classification)
     LinearLayout mainClassification;
+    @Bind(R.id.main_refresh)
+    SwipeRefreshLayout refreshLayout;
     private MainContract.Presenter mPresenter;
     public ImageHandler handler = new ImageHandler(new WeakReference<>(this));
     @Bind(R.id.play_viewpager)
@@ -59,6 +65,8 @@ public class MainFragment extends BaseFragment implements MainContract.View {
     public MagicIndicator indicator;
 
     ArrayList<ImageView> list;
+    List<Video> videoList = new ArrayList<>();
+    private VideoAdapter videoAdapter;
 
     public static MainFragment newInstance() {
 
@@ -95,7 +103,11 @@ public class MainFragment extends BaseFragment implements MainContract.View {
     public void onResume() {
         super.onResume();
         handler.sendEmptyMessage(ImageHandler.MSG_BREAK_SILENT);
-        mPresenter.subscribe();
+        if (mPresenter != null) {
+            mPresenter.subscribe();
+
+        }
+
     }
 
     @Override
@@ -103,7 +115,10 @@ public class MainFragment extends BaseFragment implements MainContract.View {
         super.onPause();
         //离开时暂停，否则会报空指针
         handler.sendEmptyMessage(ImageHandler.MSG_KEEP_SILENT);
-        mPresenter.unsubscribe();
+        if (mPresenter != null) {
+            mPresenter.unsubscribe();
+        }
+
     }
 
     @Override
@@ -160,22 +175,49 @@ public class MainFragment extends BaseFragment implements MainContract.View {
         handler.sendEmptyMessageDelayed(ImageHandler.MSG_UPDATE_IMAGE, ImageHandler.MSG_DELAY);
 
         initMagicIndicator();
+        initRefresh();
+
+
+    }
+
+    private void initRefresh() {
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mPresenter.refresh(refreshLayout);
+            }
+        });
     }
 
     @Override
     public void initRecyclerView() {
-        List<Video> list = new ArrayList<>();
-        list.add(new Video());
-        list.add(new Video());
-        list.add(new Video());
-        list.add(new Video());
+
         GridLayoutManager manager = new GridLayoutManager(getActivity(), 2);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setLayoutManager(manager);
-        VideoAdapter videoAdapter = new VideoAdapter(list);
+        videoAdapter = new VideoAdapter(getActivity(), videoList, recyclerView);
+        videoAdapter.addHeaderView(R.layout.recycler_header);
+        videoAdapter.setOnItemClickListener(new CommonAdapter.OnItemClickListener() {
+            @Override
+            public void OnItemClick(View view, ViewHolder holder, int position) {
+                goActivity(VideoActivity.class);
+            }
+
+            @Override
+            public boolean onItemLongClick(View view, ViewHolder holder, int position) {
+                return false;
+            }
+        });
         recyclerView.setAdapter(videoAdapter);
-        videoAdapter.addHeaderView(LayoutInflater.from(getActivity()).inflate(R.layout.recycler_header, null));
 
 
+    }
+
+    @Override
+    public void getList(List<Video> list) {
+        videoAdapter.replaceList(list);
     }
 
     private void initMagicIndicator() {

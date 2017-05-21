@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ToolBarStyle" >
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <style name="ImageViewStyle">
+        <item name="android:fitsSystemWindows">false</item>
+    </style>
+
+    <style name="CollapsingToolbarStyle">
+        <item name="android:fitsSystemWindows">false</item>
+    </style>
+
+    <style name="AppBarStyle">
+        <item name="android:fitsSystemWindows">false</item>
+    </style>
+</resources>

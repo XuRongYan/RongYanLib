@@ -1,10 +1,12 @@
 package com.rongyan.rongyanlibrary.rxHttpHelper.entity;
 
+import com.rongyan.rongyanlibrary.base.BaseEntity;
+
 /**
  * Created by XRY on 2017/4/14.
  */
 
-public class User {
+public class User extends BaseEntity{
     private int userid;
     private String cellphone;
     private String nickname;

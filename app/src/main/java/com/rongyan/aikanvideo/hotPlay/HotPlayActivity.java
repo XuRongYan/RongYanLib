@@ -23,7 +23,7 @@ public class HotPlayActivity extends BaseActivity {
     }
 
     @Override
-    protected void initViews() {
+    protected void initViews(Bundle savedInstanceState) {
         toolbar.setTitle(R.string.string_three_month_hot_play);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();

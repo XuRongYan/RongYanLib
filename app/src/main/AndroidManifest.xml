@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 外部存储写入权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name="com.rongyan.rongyanlibrary.base.BaseApplication"
@@ -20,7 +22,9 @@
         <activity android:name=".login.LoginActivity" />
         <activity
             android:name=".main.MainActivity"
-            android:label="@string/string_main">
+            android:label="@string/string_main"
+            android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,7 +35,26 @@
         <activity android:name=".register.RegisterActivity" />
         <activity android:name=".guessYouLike.GuessYouLikeActivity" />
         <activity android:name=".hotPlay.HotPlayActivity" />
-        <activity android:name=".rank.RankActivity"></activity>
+        <activity android:name=".rank.RankActivity" />
+        <activity
+            android:name=".video.VideoActivity"
+            android:screenOrientation="landscape"
+            />
+        <activity android:name=".search.SearchActivity" />
+
+        <provider
+            android:name="br.com.mauker.materialsearchview.db.HistoryProvider"
+            android:authorities="br.com.mauker.materialsearchview.searchhistorydatabase"
+            android:exported="false"
+            android:protectionLevel="signature"
+            android:syncable="true" />
+
+        <activity android:name=".watchhistory.WatchHistoryActivity" />
+        <activity android:name=".mycollection.MyCollectionActivity" />
+        <activity android:name=".download.DownloadActivity" />
+        <activity android:name=".advertisement.AdvertisementActivity"
+            android:screenOrientation="landscape"
+            />
     </application>
 
 </manifest>

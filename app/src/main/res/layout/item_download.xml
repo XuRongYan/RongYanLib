@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="100dp">
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_weight="3"
+        android:layout_height="match_parent"
+        android:layout_margin="16dp"
+        android:src="@mipmap/ic_launcher"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="7"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/download_list_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="@color/colorPrimary"
+                android:text="欢乐颂"/>
+
+            <TextView
+                android:id="@+id/download_title_new"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:text="第一季"/>
+        </LinearLayout>
+
+        <com.exampleenen.ruedy.imagelib.widget.IdentityImageView
+            android:id="@+id/download_progress_img"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center_vertical"
+            app:iciv_bigimage="@drawable/ic_pause_primary_24dp"
+            app:iciv_hint_smallimageview="true"
+            app:iciv_isprogress="true"
+            app:iciv_progress_collor="@color/colorPrimary"
+            app:iciv_border_width="5"
+            />
+
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

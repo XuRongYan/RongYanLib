@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import com.rongyan.aikanvideo.R;
 import com.rongyan.aikanvideo.adapter.OrderAdapter;
 import com.rongyan.rongyanlibrary.base.BaseFragment;
-import com.rongyan.rongyanlibrary.commonAdapter_recyclerView.MyDecoration;
 import com.rongyan.rongyanlibrary.rxHttpHelper.entity.Order;
 
 import java.util.ArrayList;
@@ -38,7 +37,6 @@ public class OrderFragment extends BaseFragment implements OrderContract.View {
         List<Order> list = new ArrayList<>();
         OrderAdapter adapter = new OrderAdapter(getActivity(), list);
         recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new MyDecoration(getActivity(), MyDecoration.VERTICAL_LIST));
     }
 
     @Override

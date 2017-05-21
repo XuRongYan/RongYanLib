@@ -38,6 +38,15 @@
     <string name="string_guess_you_like">猜你喜欢</string>
     <string name="string_three_month_hot_play">三月热播</string>
     <string name="string_rank">排行榜</string>
+    <string name="load_more">加载更多...</string>
+    <string name="no_more">没有更多了</string>
+    <string name="search_cn">搜索</string>
+    <string name="ikan_search">ikan搜索</string>
+    <string name="danmu">弹幕</string>
+    <string name="user_comment">用户评论</string>
+    <string name="login_first">请先登录</string>
+    <string name="watch_history">观看历史</string>
+    <string name="download_center">离线中心</string>
 
 
 </resources>

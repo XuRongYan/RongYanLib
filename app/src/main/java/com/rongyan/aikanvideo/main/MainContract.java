@@ -1,7 +1,12 @@
 package com.rongyan.aikanvideo.main;
 
+import android.support.v4.widget.SwipeRefreshLayout;
+
 import com.rongyan.rongyanlibrary.base.BasePresenter;
 import com.rongyan.rongyanlibrary.base.BaseView;
+import com.rongyan.rongyanlibrary.rxHttpHelper.entity.Video;
+
+import java.util.List;
 
 /**
  *
@@ -10,11 +15,13 @@ import com.rongyan.rongyanlibrary.base.BaseView;
 
 public interface MainContract {
     interface Presenter extends BasePresenter {
-
+        void getFirstPage();
+        void refresh(SwipeRefreshLayout swipeRefreshLayout);
     }
 
     interface View extends BaseView<Presenter> {
         void initViews();
         void initRecyclerView();
+        void getList(List<Video> list);
     }
 }

@@ -14,6 +14,7 @@ public class ApiException extends RuntimeException {
     private static final String PARAMENT_FORMAT_ERROR = "参数格式错误，不是json数据或者是其他要求数据";
     private static final String PARAMENT_LACK = "缺少特定名称的参数";
     private static final String DATA_NOT_FOUND = "缺少必须参数,缺少特定名称的参数";
+    private static final String DATABASE_LINK_FAIL = "数据库连接失败";
     private static final String ADMIN_NOT_FOUND = "该用户不存在";
     private static final String PSW_ERROR = "登录密码错误";
     private static final String OBJECT_FORBIDDEN = "该对象已被禁用";
@@ -30,9 +31,11 @@ public class ApiException extends RuntimeException {
     private static final String JIGUANG_ERROR = "极光服务器异常";
     private static final String DAYU_ERROR = "大于服务器异常";
     private static final String VERIFICATION_CODE_ERROR = "短信验证码不正确";
+    private static final String VERIFICATION_CODE_TIMEOUT = "验证码超时";
+    private static final String VERIFICATION_CODE_NOT_FOUND = "该手机未获取验证码";
     private static final String OTHER_CASE = "其他情况";
     private static final String NULL_RETURN = "返回值为空";
-    private static final String RESULT_CODE_FAIL = "验证码错误111";
+    private static final String RESULT_CODE_FAIL = "验证码错误";
     private static final String INVALID_USER = "用户不存在";
     private static final String LOGIN_ERROR = "用户名或密码错误";
 
@@ -67,8 +70,17 @@ public class ApiException extends RuntimeException {
             case 202:
                 message = PARAMENT_LACK;
                 break;
+            case 203:
+                message = VERIFICATION_CODE_ERROR;
+                break;
+            case 204:
+                message = VERIFICATION_CODE_TIMEOUT;
+                break;
+            case 205:
+                message = VERIFICATION_CODE_NOT_FOUND;
+                break;
             case 3:
-                message = DATA_NOT_FOUND;
+                message = DATABASE_LINK_FAIL;
                 break;
             case 4:
                 message = INVALID_USER;

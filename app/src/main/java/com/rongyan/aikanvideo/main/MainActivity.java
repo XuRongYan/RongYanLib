@@ -1,6 +1,8 @@
 package com.rongyan.aikanvideo.main;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
@@ -14,17 +16,27 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.linxiao.commondevlib.util.PreferencesUtil;
 import com.rongyan.aikanvideo.R;
 import com.rongyan.aikanvideo.adapter.MainViewPagerAdapter;
 import com.rongyan.aikanvideo.adapter.MyIndicatorAdapter;
-import com.rongyan.aikanvideo.bean.LoginUser;
+import com.rongyan.aikanvideo.download.DownloadActivity;
 import com.rongyan.aikanvideo.find.FindFragment;
 import com.rongyan.aikanvideo.login.LoginActivity;
+import com.rongyan.aikanvideo.mycollection.MyCollectionActivity;
 import com.rongyan.aikanvideo.order.OrderFragment;
+import com.rongyan.aikanvideo.search.SearchActivity;
+import com.rongyan.aikanvideo.watchhistory.WatchHistoryActivity;
+import com.rongyan.rongyanlibrary.ImageLoader.ImageLoader;
+import com.rongyan.rongyanlibrary.ImageLoader.ImageLoaderUtil;
 import com.rongyan.rongyanlibrary.base.BaseActivity;
 import com.rongyan.rongyanlibrary.base.BaseAppManager;
 import com.rongyan.rongyanlibrary.base.BaseFragment;
+import com.rongyan.rongyanlibrary.rxHttpHelper.entity.User;
+import com.rongyan.rongyanlibrary.util.LogUtils;
 import com.rongyan.rongyanlibrary.util.ToastUtils;
 
 import net.lucode.hackware.magicindicator.MagicIndicator;
@@ -47,6 +59,9 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
     DrawerLayout mainDrawer;
     @Bind(R.id.main_indicator)
     MagicIndicator mainIndicator;
+    private static Activity activity;
+
+    private static final String TAG = "LifeStyleActivityA";
 
     private long exitTime = 0;
     ArrayList<BaseFragment> fragments = new ArrayList<>();
@@ -55,6 +70,7 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
     private BaseFragment findFragment;
     private BaseFragment orderFragment;
     private SearchView searchView;
+    private MainPresenter mainPresenter;
 
 
     @Override
@@ -63,12 +79,16 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
     }
 
     @Override
-    protected void initViews() {
+    protected void initViews(Bundle savedInstanceState) {
+        android.util.Log.d(TAG, "onCreate");
         setSupportActionBar(toolbar);
+        activity = this;
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+
         View header = LayoutInflater.from(this).inflate(R.layout.nav_header, null);
         View headerNotLogin = LayoutInflater.from(this).inflate(R.layout.nav_header_not_login, null);
         headerNotLogin.setOnClickListener(new View.OnClickListener() {
@@ -78,7 +98,8 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
             }
         });
 
-        if (LoginUser.user == null) {
+        User user = PreferencesUtil.getSerializable(this, "user");
+        if (user == null) {
             if (mainNav.getHeaderCount() != 0) {
                 mainNav.removeView(headerNotLogin);
                 mainNav.removeView(header);
@@ -89,8 +110,51 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
                 mainNav.removeView(header);
                 mainNav.removeView(headerNotLogin);
             }
+            ImageView headImg = (ImageView) header.findViewById(R.id.header_head_img);
+            TextView headName = (TextView) header.findViewById(R.id.header_name);
+            TextView headPhone = (TextView) header.findViewById(R.id.header_phone);
+            headName.setText(user.getNickname());
+            headPhone.setText(user.getCellphone());
+            ImageLoader loader = new ImageLoader.Builder()
+                    .imgView(headImg)
+                    .url(user.getHeadimg())
+                    .placeHolder(R.mipmap.ic_launcher)
+                    .build();
+            ImageLoaderUtil.getInstance().loadImage(this, loader);
             mainNav.addHeaderView(header);
         }
+
+        mainNav.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.my_history:
+                        if (PreferencesUtil.getSerializable(MainActivity.this, "user") != null) {
+                            goActivity(WatchHistoryActivity.class);
+                        } else {
+                            ToastUtils.showShort(MainActivity.this, getResources().getString(R.string.login_first));
+                        }
+                        break;
+                    case R.id.my_collect:
+                        if (PreferencesUtil.getSerializable(MainActivity.this, "user") != null) {
+                            goActivity(MyCollectionActivity.class);
+                        } else {
+                            ToastUtils.showShort(MainActivity.this, getResources().getString(R.string.login_first));
+                        }
+                        break;
+                    case R.id.my_setting:
+                        break;
+                    case R.id.my_download:
+                        if (PreferencesUtil.getSerializable(MainActivity.this, "user") != null) {
+                            goActivity(DownloadActivity.class);
+                        } else {
+                            ToastUtils.showShort(MainActivity.this, getResources().getString(R.string.login_first));
+                        }
+                        break;
+                }
+                return true;
+            }
+        });
 
         titleList.add("首页");
         titleList.add("发现");
@@ -115,7 +179,50 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
         commonNavigator.setAdjustMode(true);
 
         mainIndicator.setNavigator(commonNavigator);
+
+
         initPresenter();
+
+
+    }
+
+//    @Override
+//    protected void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//        outState.putSerializable("presenter", mainPresenter);
+//    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        android.util.Log.d(TAG, "onstart");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LogUtils.d(TAG, "onResume", "onResume");
+//        if (mainPresenter == null) {
+//            initPresenter();
+//        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        android.util.Log.d(TAG, "onPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        android.util.Log.d(TAG, "onstop");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        android.util.Log.d(TAG, "ondestroy");
     }
 
     @Override
@@ -130,7 +237,7 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.search:
-
+                goActivity(SearchActivity.class);
                 break;
         }
         return true;
@@ -144,7 +251,7 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
     }
 
     private void initPresenter() {
-        new MainPresenter((MainContract.View) mainFragment, this);
+        mainPresenter = new MainPresenter((MainContract.View) mainFragment, this, lifeCycleSubject);
     }
 
 

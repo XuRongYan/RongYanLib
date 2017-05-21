@@ -22,7 +22,7 @@ public class GuessYouLikeActivity extends BaseActivity {
     }
 
     @Override
-    protected void initViews() {
+    protected void initViews(Bundle savedInstanceState) {
         toolbar.setTitle(R.string.string_guess_you_like);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
