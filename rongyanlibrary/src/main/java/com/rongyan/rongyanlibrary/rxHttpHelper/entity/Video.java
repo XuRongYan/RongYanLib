@@ -26,6 +26,9 @@ public class Video extends BaseEntity{
     private int belongtovideoid;
     private int TVplayindex;
 
+    public Video() {
+    }
+
     public Video(int videoid, String filename, String videodirectory, String title, String titlenew, String description, String type, String catagory, String labels, int playtimes, long timelength, String videoDate, int isFirstPage, String videoUrlAdress, String imageUrlAdress, String numberOfVideoplay, int belongtovideoid, int TVplayindex) {
         this.videoid = videoid;
         this.filename = filename;

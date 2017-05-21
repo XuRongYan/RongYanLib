@@ -123,7 +123,7 @@ public class CustomMediaController extends MediaController implements View.OnCli
 
     public CustomMediaController(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mGestureDetector = new GestureDetector(context, new MyGestureListener());
+        //mGestureDetector = new GestureDetector(context, new MyGestureListener());
     }
 
     @Override

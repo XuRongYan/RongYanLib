@@ -3,6 +3,7 @@ package com.rongyan.rongyanlibrary.ImageLoader;
 import android.content.Context;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
@@ -23,10 +24,12 @@ public class GlideImageLoaderStrategy implements BaseImageLoaderStrategy {
         Glide.with(context)
                 .load(img.getUrl())
                 .placeholder(img.getPlaceHolder())
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .dontAnimate()
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        LogUtils.d("Glide", "exception", e.toString());
                         return false;
                     }
 

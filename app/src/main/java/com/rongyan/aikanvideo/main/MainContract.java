@@ -23,5 +23,7 @@ public interface MainContract {
         void initViews();
         void initRecyclerView();
         void getList(List<Video> list);
+        void load();
+        void endLoad();
     }
 }

@@ -4,23 +4,30 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.media.AudioManager;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Display;
 import android.view.GestureDetector;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.linxiao.commondevlib.util.PreferencesUtil;
 import com.rongyan.aikanvideo.R;
+import com.rongyan.aikanvideo.adapter.PopGuessULikeAdapter;
 import com.rongyan.aikanvideo.widget.vitamioView.CustomMediaController;
 import com.rongyan.rongyanlibrary.base.BaseActivity;
 import com.rongyan.rongyanlibrary.rxHttpHelper.entity.Comment;
@@ -69,19 +76,9 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
     private DanmakuContext danmakuContext;
     private CustomMediaController mCustomMediaController;
     private VideoView mVideoView;
-    private FrameLayout view_volume;
-    private FrameLayout view_brightness;
-    private TextView textSeek;
-    private TextView volumePercent;
-    private TextView brightnessPercent;
-    private AudioManager mAudioManager;
-    private GestureDetector mGestureDetector;
     private Video video;
-    private ImageView collect;
-    private ImageView download;
-    private ImageView share;
-    private ImageView danmakuSwitch;
-    private RecyclerView recyclerView;
+    private GestureDetector mGestureDetector;
+    private PopupWindow popGuessULike;
     private List<Video> list = new ArrayList<>();
     private List<Comment> commentList = new ArrayList<>();
     private Random random = new Random();
@@ -95,7 +92,7 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
         super.onCreate(savedInstanceState);
         Vitamio.isInitialized(getApplicationContext());
         setContentView(R.layout.activity_video);
-
+        mGestureDetector = new GestureDetector(this, new MyGestureListener());
         page = 1;
         user = PreferencesUtil.getSerializable(this, "user");
 
@@ -107,6 +104,7 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
         mCustomMediaController = new CustomMediaController(this, mVideoView, this, danmakuView, showDanmaku);
         //initAdvVideo();
         getVideoComment();
+        initGuessUlike();
         mVideoView.setVideoURI(uri);
         mVideoView.setZOrderOnTop(true);
         mVideoView.setMediaController(mCustomMediaController);
@@ -166,6 +164,32 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
         }
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (mGestureDetector.onTouchEvent(event)) {
+            return true;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    private void initGuessUlike() {
+        View popView = LayoutInflater.from(this).inflate(R.layout.pop_guess_u_like, null);
+        RecyclerView popRecycler = (RecyclerView) popView.findViewById(R.id.pop_guess_u_like_recycler);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        popRecycler.setLayoutManager(linearLayoutManager);
+        List<Video> list = new ArrayList<>();
+        list.add(new Video());
+        list.add(new Video());
+        list.add(new Video());
+        list.add(new Video());
+        list.add(new Video());
+        list.add(new Video());
+        PopGuessULikeAdapter adapter = new PopGuessULikeAdapter(this, list);
+        popRecycler.setAdapter(adapter);
+        popGuessULike = new PopupWindow(popView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    }
+
 //    private void initPortView() {
 //        mVideoView = (VideoView) findViewById(R.id.surface_view);
 //        pb = (ProgressBar) findViewById(R.id.probar);
@@ -181,7 +205,7 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
         downloadRateView = (TextView) findViewById(R.id.download_rate);
         loadRateView = (TextView) findViewById(R.id.load_rate);
         danmakuView = (DanmakuView) findViewById(R.id.danmuku_view);
-        recyclerView = (RecyclerView) findViewById(R.id.video_recycler);
+        //recyclerView = (RecyclerView) findViewById(R.id.video_recycler);
 //        advVideo = (VideoView) findViewById(R.id.adv_video);
 //        skip = (Button)findViewById(R.id.adv_btn_skip);
 //        frameAdv = (FrameLayout) findViewById(R.id.frame_adv);
@@ -396,5 +420,40 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
         InputStream inputStream;
         inputStream = new ByteArrayInputStream(s.getBytes());
         mCustomMediaController.setInputStream(inputStream);
+    }
+
+    private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            float oldX = e1.getX();
+            float oldY = e1.getY();
+            int y = (int) e2.getRawY();
+           int x = (int) e2.getRawX();
+            Display display = VideoActivity.this.getWindowManager().getDefaultDisplay();
+            Point point = new Point();
+            display.getSize(point);
+            int windowWidth = point.x;
+            int windowHeight = point.y;
+            if (distanceY > 0) {
+                popGuessULike.showAtLocation(mVideoView, Gravity.CENTER, 0, 0);
+            } else if (distanceY < 0) {
+                if (popGuessULike.isShowing()) {
+                    popGuessULike.dismiss();
+                }
+            }
+
+            return super.onScroll(e1, e2, distanceX, distanceY);
+        }
+
+
+
+
+
+
+
+
+
     }
 }

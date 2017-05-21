@@ -4,6 +4,7 @@ package com.rongyan.aikanvideo.main;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -14,9 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.rongyan.aikanvideo.R;
-import com.rongyan.aikanvideo.adapter.ImageAdapter;
+import com.rongyan.aikanvideo.adapter.ImageUrlAdapter;
 import com.rongyan.aikanvideo.adapter.VideoAdapter;
 import com.rongyan.aikanvideo.classification.ClassificationActivity;
 import com.rongyan.aikanvideo.handler.ImageHandler;
@@ -24,6 +26,8 @@ import com.rongyan.aikanvideo.video.VideoActivity;
 import com.rongyan.aikanvideo.widget.ScaleCircleNavigator;
 import com.rongyan.rongyanlibrary.CommonAdapter.CommonAdapter;
 import com.rongyan.rongyanlibrary.CommonAdapter.ViewHolder;
+import com.rongyan.rongyanlibrary.ImageLoader.ImageLoader;
+import com.rongyan.rongyanlibrary.ImageLoader.ImageLoaderUtil;
 import com.rongyan.rongyanlibrary.base.BaseFragment;
 import com.rongyan.rongyanlibrary.rxHttpHelper.entity.Video;
 
@@ -57,6 +61,8 @@ public class MainFragment extends BaseFragment implements MainContract.View {
     LinearLayout mainClassification;
     @Bind(R.id.main_refresh)
     SwipeRefreshLayout refreshLayout;
+    @Bind(R.id.indicator_loading)
+    ProgressBar progressBar;
     private MainContract.Presenter mPresenter;
     public ImageHandler handler = new ImageHandler(new WeakReference<>(this));
     @Bind(R.id.play_viewpager)
@@ -67,6 +73,7 @@ public class MainFragment extends BaseFragment implements MainContract.View {
     ArrayList<ImageView> list;
     List<Video> videoList = new ArrayList<>();
     private VideoAdapter videoAdapter;
+    private ImageUrlAdapter imageUrlAdapter;
 
     public static MainFragment newInstance() {
 
@@ -77,6 +84,11 @@ public class MainFragment extends BaseFragment implements MainContract.View {
         return fragment;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mPresenter.getFirstPage();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -134,48 +146,8 @@ public class MainFragment extends BaseFragment implements MainContract.View {
 
     @Override
     public void initViews() {
-        ImageView imageView1 = new ImageView(getActivity());
-        ImageView imageView2 = new ImageView(getActivity());
-        ImageView imageView3 = new ImageView(getActivity());
-        imageView1.setImageResource(R.mipmap.ic_launcher);
-        imageView2.setImageResource(R.mipmap.found);
-        imageView3.setImageResource(R.mipmap.subscribe);
-        list = new ArrayList<>();
-        list.add(imageView1);
-        list.add(imageView2);
-        list.add(imageView3);
-        viewPager.setAdapter(new ImageAdapter(list, getActivity()));
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                handler.sendMessage(Message.obtain(handler, ImageHandler.MSG_PAGE_CHANGED, position, 0));
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                switch (state) {
-                    case ViewPager.SCROLL_STATE_DRAGGING:
-                        handler.sendEmptyMessage(ImageHandler.MSG_KEEP_SILENT);
-                        break;
-                    case ViewPager.SCROLL_STATE_IDLE:
-                        handler.sendEmptyMessageDelayed(ImageHandler.MSG_UPDATE_IMAGE, ImageHandler.MSG_DELAY);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-        viewPager.setCurrentItem(Integer.MAX_VALUE / 2);
-        //开始轮播效果
-        handler.sendEmptyMessageDelayed(ImageHandler.MSG_UPDATE_IMAGE, ImageHandler.MSG_DELAY);
-
-        initMagicIndicator();
-        initRefresh();
+        //initRefresh();
 
 
     }
@@ -217,16 +189,81 @@ public class MainFragment extends BaseFragment implements MainContract.View {
 
     @Override
     public void getList(List<Video> list) {
-        videoAdapter.replaceList(list);
+        initMagicIndicator(list.size());
+        List<ImageView> imgList = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            Video video = list.get(i);
+            ImageView image = new ImageView(getActivity());
+            ImageLoader loader = new ImageLoader.Builder()
+                    .url(video.getImageUrlAdress())
+                    .placeHolder(R.drawable.ic_failure)
+                    .imgView(image)
+                    .build();
+            ImageLoaderUtil.getInstance().loadImage(getActivity(), loader);
+            imgList.add(image);
+        }
+        imageUrlAdapter = new ImageUrlAdapter(imgList, list, getActivity());
+        viewPager.setAdapter(imageUrlAdapter);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                indicator.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                indicator.onPageSelected(position);
+                handler.sendMessage(Message.obtain(handler, ImageHandler.MSG_PAGE_CHANGED, position, 0));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                indicator.onPageScrollStateChanged(state);
+                switch (state) {
+                    case ViewPager.SCROLL_STATE_DRAGGING:
+                        handler.sendEmptyMessage(ImageHandler.MSG_KEEP_SILENT);
+                        break;
+                    case ViewPager.SCROLL_STATE_IDLE:
+                        handler.sendEmptyMessageDelayed(ImageHandler.MSG_UPDATE_IMAGE, ImageHandler.MSG_DELAY);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        viewPager.setCurrentItem(Integer.MAX_VALUE / 2);
+        //开始轮播效果
+        handler.sendEmptyMessageDelayed(ImageHandler.MSG_UPDATE_IMAGE, ImageHandler.MSG_DELAY);
+        endLoad();
+
     }
 
-    private void initMagicIndicator() {
+    @Override
+    public void load() {
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void endLoad() {
+        progressBar.setVisibility(View.GONE);
+    }
+
+    private void notifyRefreshAdapter(List<ImageView> imgList, List<Video> videoList) {
+        if (imageUrlAdapter != null) {
+            imageUrlAdapter = null;
+        }
+        imageUrlAdapter = new ImageUrlAdapter(imgList, videoList, getActivity());
+        viewPager.setAdapter(imageUrlAdapter);
+    }
+
+    private void initMagicIndicator(int size) {
         ScaleCircleNavigator scaleCircleNavigator = new ScaleCircleNavigator(getActivity());
-        scaleCircleNavigator.setCircleCount(list.size());
+        scaleCircleNavigator.setCircleCount(size);
         scaleCircleNavigator.setNormalCircleColor(Color.LTGRAY);
         scaleCircleNavigator.setSelectedCircleColor(Color.DKGRAY);
         indicator.setNavigator(scaleCircleNavigator);
         ViewPagerHelper.bind(indicator, viewPager);
+
     }
 
     @OnClick({R.id.main_classification,

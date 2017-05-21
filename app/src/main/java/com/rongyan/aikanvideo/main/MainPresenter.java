@@ -10,6 +10,8 @@ import com.rongyan.rongyanlibrary.rxHttpHelper.http.HttpResult;
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.HttpUtil;
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.NetworkApi;
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.ProgressSubscriber;
+import com.rongyan.rongyanlibrary.util.LogUtils;
+import com.rongyan.rongyanlibrary.util.ToastUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -23,6 +25,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public class MainPresenter implements MainContract.Presenter, Serializable{
+    private static final String TAG = "MainPresenter";
     private final MainContract.View mView;
     private final Context mContext;
     public final PublishSubject<ActivityLifeCycleEvent> lifeCycleSubject;
@@ -38,7 +41,7 @@ public class MainPresenter implements MainContract.Presenter, Serializable{
 
     @Override
     public void subscribe() {
-        getFirstPage();
+
     }
 
     @Override
@@ -51,6 +54,7 @@ public class MainPresenter implements MainContract.Presenter, Serializable{
 
     @Override
     public void getFirstPage() {
+        mView.load();
         ApiService apiService = new ApiService();
         Observable<HttpResult<List<Video>>> mainPage = apiService.getService(NetworkApi.class).getMainPage(null);
         HttpUtil.getInstance().toSubscribe(mainPage, new ProgressSubscriber<List<Video>>(mContext) {
@@ -62,14 +66,15 @@ public class MainPresenter implements MainContract.Presenter, Serializable{
 
             @Override
             protected void _onError(String message) {
-
+                ToastUtils.showShort(mContext, message);
+                LogUtils.e(TAG, "getFirstPage", message);
             }
 
             @Override
             protected void _onCompleted() {
 
             }
-        }, null, ActivityLifeCycleEvent.PAUSE, lifeCycleSubject, false, false, true);
+        }, null, ActivityLifeCycleEvent.PAUSE, lifeCycleSubject, false, false, false);
     }
 
     @Override
@@ -80,7 +85,7 @@ public class MainPresenter implements MainContract.Presenter, Serializable{
 
             @Override
             protected void _onNext(List<Video> videos) {
-                mView.getList(videos);
+                //mView.getList(videos);
                 swipeRefreshLayout.setRefreshing(false);
             }
 

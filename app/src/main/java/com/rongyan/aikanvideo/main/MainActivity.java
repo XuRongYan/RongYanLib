@@ -1,6 +1,5 @@
 package com.rongyan.aikanvideo.main;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -59,7 +58,7 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
     DrawerLayout mainDrawer;
     @Bind(R.id.main_indicator)
     MagicIndicator mainIndicator;
-    private static Activity activity;
+
 
     private static final String TAG = "LifeStyleActivityA";
 
@@ -82,7 +81,7 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
     protected void initViews(Bundle savedInstanceState) {
         android.util.Log.d(TAG, "onCreate");
         setSupportActionBar(toolbar);
-        activity = this;
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -186,11 +185,7 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
 
     }
 
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        outState.putSerializable("presenter", mainPresenter);
-//    }
+
 
     @Override
     protected void onStart() {
