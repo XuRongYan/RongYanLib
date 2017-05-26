@@ -1,10 +1,10 @@
 package com.rongyan.aikanvideo.video;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -72,7 +72,7 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
     private ProgressBar pb;
     private TextView downloadRateView, loadRateView;
     private boolean showDanmaku;
-    private DanmakuView danmakuView;
+    public DanmakuView danmakuView;
     private DanmakuContext danmakuContext;
     private CustomMediaController mCustomMediaController;
     private VideoView mVideoView;
@@ -81,9 +81,13 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
     private PopupWindow popGuessULike;
     private List<Video> list = new ArrayList<>();
     private List<Comment> commentList = new ArrayList<>();
+    private List<Video> recommendList = new ArrayList<>();
     private Random random = new Random();
     private boolean isFirst = true;
     private User user;
+    private PopGuessULikeAdapter guessULikeAdapter;
+    private ArrayList<Video> teleplayList;
+    //private List<Plots> plotsList = new ArrayList<>();
 
 
     @Override
@@ -97,16 +101,19 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
         user = PreferencesUtil.getSerializable(this, "user");
 
         initLandView();
-
+        mVideoView.setZOrderOnTop(true);
+        mVideoView.setZOrderMediaOverlay(true);
         video = (Video) getIntent().getExtras().get("video");
+        teleplayList =  getIntent().getExtras().getParcelableArrayList("teleplay");
         assert video != null;
-        uri = Uri.parse(video.getVideoUrlAdress());
-        mCustomMediaController = new CustomMediaController(this, mVideoView, this, danmakuView, showDanmaku);
-        //initAdvVideo();
+        uri = Uri.parse(video.getVideoURL());
+        mCustomMediaController = new CustomMediaController(this, mVideoView, this, danmakuView, lifeCycleSubject, user, video, teleplayList, showDanmaku);
         getVideoComment();
         initGuessUlike();
+        getRecommend();
         mVideoView.setVideoURI(uri);
-        mVideoView.setZOrderOnTop(true);
+        LogUtils.d(TAG_LOG, "mVideoView is in layout?", mVideoView.isInLayout() + "");
+        danmakuView.bringToFront();
         mVideoView.setMediaController(mCustomMediaController);
         mVideoView.requestFocus();
         mVideoView.setOnInfoListener(this);
@@ -120,6 +127,7 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
         if (savedInstanceState != null) {
             mVideoView.seekTo(savedInstanceState.getLong("position"));
         }
+
         mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -148,6 +156,8 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
             addHistory();
         }
     }
+
+
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -179,25 +189,15 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         popRecycler.setLayoutManager(linearLayoutManager);
         List<Video> list = new ArrayList<>();
-        list.add(new Video());
-        list.add(new Video());
-        list.add(new Video());
-        list.add(new Video());
-        list.add(new Video());
-        list.add(new Video());
-        PopGuessULikeAdapter adapter = new PopGuessULikeAdapter(this, list);
-        popRecycler.setAdapter(adapter);
+        guessULikeAdapter = new PopGuessULikeAdapter(this, list, mVideoView);
+        popRecycler.setAdapter(guessULikeAdapter);
         popGuessULike = new PopupWindow(popView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        popGuessULike.setBackgroundDrawable(new BitmapDrawable());
+        popGuessULike.setOutsideTouchable(true);
+        popGuessULike.setTouchable(true);
     }
 
-//    private void initPortView() {
-//        mVideoView = (VideoView) findViewById(R.id.surface_view);
-//        pb = (ProgressBar) findViewById(R.id.probar);
-//        downloadRateView = (TextView) findViewById(R.id.download_rate);
-//        loadRateView = (TextView) findViewById(R.id.load_rate);
-//        danmakuView = (DanmakuView) findViewById(R.id.danmuku_view);
-//        recyclerView = (RecyclerView) findViewById(R.id.video_recycler);
-//    }
+
 
     private void initLandView() {
         mVideoView = (VideoView) findViewById(R.id.surface_view);
@@ -205,13 +205,8 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
         downloadRateView = (TextView) findViewById(R.id.download_rate);
         loadRateView = (TextView) findViewById(R.id.load_rate);
         danmakuView = (DanmakuView) findViewById(R.id.danmuku_view);
-        //recyclerView = (RecyclerView) findViewById(R.id.video_recycler);
-//        advVideo = (VideoView) findViewById(R.id.adv_video);
-//        skip = (Button)findViewById(R.id.adv_btn_skip);
-//        frameAdv = (FrameLayout) findViewById(R.id.frame_adv);
+
     }
-
-
 
 
     @Override
@@ -236,7 +231,7 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
         if (danmakuView != null && danmakuView.isPrepared() && danmakuView.isPaused()) {
             danmakuView.resume();
         }
-        LogUtils.d(TAG_LOG, "onResume", "执行了");
+
     }
 
     @Override
@@ -276,6 +271,7 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
                 break;
             case MediaPlayer.MEDIA_INFO_BUFFERING_END:
                 mVideoView.start();
+                //mVideoView.seekTo(mVideoView.getCurrentPosition());
                 danmakuView.start();
                 pb.setVisibility(View.GONE);
                 downloadRateView.setVisibility(View.GONE);
@@ -302,7 +298,7 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
         super.onConfigurationChanged(newConfig);
     }
 
-    private void getVideoComment() {
+    public void getVideoComment() {
         ApiService apiService = new ApiService();
         Observable<HttpResult<List<Comment>>> videoCommentById = apiService.getService(NetworkApi.class).getVideoCommentById(PER_PAGE, page++, 10572);
         HttpUtil.getInstance().toSubscribe(videoCommentById, new ProgressSubscriber<List<Comment>>(this) {
@@ -312,7 +308,6 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
                 if (list.size() >= PER_PAGE - 1) {
                     getVideoComment();
                 } else {
-
                     handleList();
 
                 }
@@ -330,46 +325,16 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
         }, null, ActivityLifeCycleEvent.PAUSE, lifeCycleSubject, false, false, false);
     }
 
-    private void initAdvVideo() {
-        synchronized (mVideoView) {
-            advVideo.setZOrderOnTop(true);
-            advVideo.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    skip();
-                }
-            });
-            advVideo.setVideoURI(Uri.parse("http://opojgabz0.bkt.clouddn.com/%E7%8E%8B%E7%89%8C%E5%AF%B9%E7%8E%8B%E7%89%8C%20170407_%E6%A0%87%E6%B8%85.mp4"));
-            skip.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    skip();
-                }
-            });
-            frameAdv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse("http://www.baidu.com"));
-                    startActivity(intent);
-                }
-            });
-            advVideo.start();
-        }
-    }
-
     private void skip() {
-
-        advVideo.stopPlayback();
-        advVideo.setZOrderOnTop(false);
+        //advVideo.stopPlayback();
         mVideoView.setZOrderOnTop(true);
+        danmakuView.bringToFront();
         frameAdv.setVisibility(View.GONE);
     }
 
     private void addHistory() {
         ApiService apiService = new ApiService();
-        Observable<HttpResult> observable = apiService.getService(NetworkApi.class).addHistory(user.getUserid(), video.getVideoid(), video.getTitle(), video.getTitlenew());
+        Observable<HttpResult> observable = apiService.getService(NetworkApi.class).addHistory(user.getUserid(), video.getVideoid(), video.getTitle(), video.getTitlenew(), 0, video.getTimelength(), video.getTimelength());
         HttpUtil.getInstance().toSubscribe(observable, new ProgressSubscriber(this) {
             @Override
             protected void _onNext(Object o) {
@@ -378,7 +343,7 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
 
             @Override
             protected void _onError(String message) {
-
+                LogUtils.e(TAG_LOG, "addHistory", message);
             }
 
             @Override
@@ -422,6 +387,29 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
         mCustomMediaController.setInputStream(inputStream);
     }
 
+    private void getRecommend() {
+        ApiService apiService = new ApiService();
+        final Observable<HttpResult<List<Video>>> recommend = apiService.getService(NetworkApi.class).getRecommend(video.getVideoid(), 4);
+        HttpUtil.getInstance().toSubscribe(recommend, new ProgressSubscriber<List<Video>>(mContext) {
+
+            @Override
+            protected void _onNext(List<Video> list) {
+                guessULikeAdapter.replaceList(list);
+            }
+
+            @Override
+            protected void _onError(String message) {
+                LogUtils.e(TAG_LOG, "getRecommend", message);
+            }
+
+            @Override
+            protected void _onCompleted() {
+
+            }
+        }, null, ActivityLifeCycleEvent.PAUSE, lifeCycleSubject, false, false, false);
+    }
+
+
     private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
 
 
@@ -430,7 +418,7 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
             float oldX = e1.getX();
             float oldY = e1.getY();
             int y = (int) e2.getRawY();
-           int x = (int) e2.getRawX();
+            int x = (int) e2.getRawX();
             Display display = VideoActivity.this.getWindowManager().getDefaultDisplay();
             Point point = new Point();
             display.getSize(point);
@@ -438,21 +426,15 @@ public class VideoActivity extends BaseActivity implements MediaPlayer.OnInfoLis
             int windowHeight = point.y;
             if (distanceY > 0) {
                 popGuessULike.showAtLocation(mVideoView, Gravity.CENTER, 0, 0);
-            } else if (distanceY < 0) {
-                if (popGuessULike.isShowing()) {
-                    popGuessULike.dismiss();
-                }
             }
+//            } else {
+//                if (popGuessULike.isShowing()) {
+//                    popGuessULike.dismiss();
+//                }
+//            }
 
             return super.onScroll(e1, e2, distanceX, distanceY);
         }
-
-
-
-
-
-
-
 
 
     }

@@ -51,6 +51,8 @@ public class RegisterFragment extends BaseFragment implements RegisterContract.V
 
     public MyHandler handler;
 
+
+
     public static RegisterFragment newInstance() {
 
         Bundle args = new Bundle();
@@ -183,6 +185,7 @@ public class RegisterFragment extends BaseFragment implements RegisterContract.V
         switch (view.getId()) {
             case R.id.btn_register:
                 mPresenter.register();
+                getActivity().finish();
                 break;
 
             case R.id.register_get_verification_code:

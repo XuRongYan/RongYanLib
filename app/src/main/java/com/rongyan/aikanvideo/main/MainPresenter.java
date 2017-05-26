@@ -54,6 +54,7 @@ public class MainPresenter implements MainContract.Presenter, Serializable{
 
     @Override
     public void getFirstPage() {
+        LogUtils.d("ImageAdapter", "getFirstPage", "getFirstPage");
         mView.load();
         ApiService apiService = new ApiService();
         Observable<HttpResult<List<Video>>> mainPage = apiService.getService(NetworkApi.class).getMainPage(null);
@@ -78,14 +79,14 @@ public class MainPresenter implements MainContract.Presenter, Serializable{
     }
 
     @Override
-    public void refresh(final SwipeRefreshLayout swipeRefreshLayout) {
+    public void refresh(int userid, final SwipeRefreshLayout swipeRefreshLayout) {
         ApiService apiService = new ApiService();
-        Observable<HttpResult<List<Video>>> mainPage = apiService.getService(NetworkApi.class).getMainPage(null);
+        Observable<HttpResult<List<Video>>> mainPage = apiService.getService(NetworkApi.class).getMainLike(userid, 8);
         HttpUtil.getInstance().toSubscribe(mainPage, new ProgressSubscriber<List<Video>>(mContext) {
 
             @Override
             protected void _onNext(List<Video> videos) {
-                //mView.getList(videos);
+                mView.getMainLike(videos);
                 swipeRefreshLayout.setRefreshing(false);
             }
 
@@ -99,5 +100,28 @@ public class MainPresenter implements MainContract.Presenter, Serializable{
 
             }
         }, null, ActivityLifeCycleEvent.PAUSE, lifeCycleSubject, false, false, false);
+    }
+
+    @Override
+    public void getMainLike(int userid) {
+        ApiService apiService = new ApiService();
+        Observable<HttpResult<List<Video>>> mainLike = apiService.getService(NetworkApi.class).getMainLike(userid, 8);
+        HttpUtil.getInstance().toSubscribe(mainLike, new ProgressSubscriber<List<Video>>(mContext) {
+
+            @Override
+            protected void _onNext(List<Video> list) {
+                mView.getMainLike(list);
+            }
+
+            @Override
+            protected void _onError(String message) {
+                LogUtils.e(TAG, "getMainLike", message);
+            }
+
+            @Override
+            protected void _onCompleted() {
+
+            }
+        }, null, ActivityLifeCycleEvent.PAUSE, lifeCycleSubject, false, false, true);
     }
 }

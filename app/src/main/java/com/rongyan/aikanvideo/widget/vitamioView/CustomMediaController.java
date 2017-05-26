@@ -10,6 +10,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -32,11 +34,27 @@ import android.widget.TextView;
 
 import com.linxiao.commondevlib.util.PreferencesUtil;
 import com.rongyan.aikanvideo.R;
+import com.rongyan.aikanvideo.adapter.ChooseIndexAdapter;
+import com.rongyan.aikanvideo.adapter.PlotsAdapter;
+import com.rongyan.aikanvideo.video.VideoActivity;
+import com.rongyan.rongyanlibrary.CommonAdapter.MyDecoration;
+import com.rongyan.rongyanlibrary.rxHttpHelper.entity.Plots;
+import com.rongyan.rongyanlibrary.rxHttpHelper.entity.User;
+import com.rongyan.rongyanlibrary.rxHttpHelper.entity.Video;
+import com.rongyan.rongyanlibrary.rxHttpHelper.http.ActivityLifeCycleEvent;
+import com.rongyan.rongyanlibrary.rxHttpHelper.http.ApiService;
+import com.rongyan.rongyanlibrary.rxHttpHelper.http.HttpResult;
+import com.rongyan.rongyanlibrary.rxHttpHelper.http.HttpUtil;
+import com.rongyan.rongyanlibrary.rxHttpHelper.http.NetworkApi;
+import com.rongyan.rongyanlibrary.rxHttpHelper.http.ProgressSubscriber;
 import com.rongyan.rongyanlibrary.util.AppUtils;
+import com.rongyan.rongyanlibrary.util.LogUtils;
 import com.rongyan.rongyanlibrary.util.ToastUtils;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import io.vov.vitamio.widget.MediaController;
 import io.vov.vitamio.widget.VideoView;
@@ -52,7 +70,8 @@ import master.flame.danmaku.danmaku.model.android.Danmakus;
 import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
 import master.flame.danmaku.danmaku.parser.IDataSource;
 import master.flame.danmaku.ui.widget.DanmakuView;
-
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 
 /**
@@ -61,8 +80,11 @@ import master.flame.danmaku.ui.widget.DanmakuView;
  */
 
 public class CustomMediaController extends MediaController implements View.OnClickListener {
-
+    private static final String TAG = "CustomMediaController";
     private final Point point = new Point();
+    private User user;
+    private Video video;
+    private PublishSubject<ActivityLifeCycleEvent> lifeCycleEventPublishSubject1;
     private ImageView img_back;
     private TextView fileName;
     private ImageView scale;
@@ -103,22 +125,41 @@ public class CustomMediaController extends MediaController implements View.OnCli
 
     private PopupWindow danmaWindow;
     private TextView choose;
+    private ImageView collect;
+    private List<Plots> plotsList = new ArrayList<>();
+    private PopupWindow plotsWindow;
+    private ImageView imgPlots;
+    private PlotsAdapter plotsAdapter;
+    private ImageView imgLike;
+    private ArrayList<Video> teleplayList;
+    private ChooseIndexAdapter chooseIndexAdapter;
+    private PopupWindow chooseIndexWindow;
+    private TextView tvChooseIndex;
 
     public CustomMediaController(Context context) {
         super(context);
     }
 
-    public CustomMediaController(Context context, VideoView mVideoView, Activity activity, DanmakuView danmakuView, boolean showDanmaku) {
+    public CustomMediaController(Context context, VideoView mVideoView, Activity activity,
+                                 DanmakuView danmakuView,
+                                 PublishSubject<ActivityLifeCycleEvent> lifeCycleEventPublishSubject,
+                                 User user,
+                                 Video video,
+                                 ArrayList<Video> teleplayList,
+                                 boolean showDanmaku) {
         super(context);
         this.context = context;
         this.mVideoView = mVideoView;
         this.activity = activity;
         this.danmakuView = danmakuView;
         this.showDanmaku = showDanmaku;
+        this.video = video;
+        this.user = user;
+        this.teleplayList = teleplayList;
+        this.lifeCycleEventPublishSubject1 = lifeCycleEventPublishSubject;
         mGestureDetector = new GestureDetector(context, new MyGestureListener());
 
     }
-
 
 
     public CustomMediaController(Context context, AttributeSet attrs) {
@@ -146,11 +187,19 @@ public class CustomMediaController extends MediaController implements View.OnCli
         volumePercent = (TextView) view.findViewById(R.id.mediacontroller_volume_percent);
         brightnessPercent = (TextView) view.findViewById(R.id.mediacontroller_brightness_percent);
         choose = (TextView) view.findViewById(R.id.mediacontroller_choose);
+        collect = (ImageView) view.findViewById(R.id.mediacontroller_collect);
+        imgPlots = (ImageView) view.findViewById(R.id.mediacontroller_plots);
+        imgLike = (ImageView) view.findViewById(R.id.mediacontroller_like);
+        tvChooseIndex = (TextView) view.findViewById(R.id.mediacontroller_choose);
+        tvChooseIndex.setOnClickListener(this);
+        imgLike.setOnClickListener(this);
         choose.setOnClickListener(this);
         scale.setOnClickListener(this);
         danmu.setOnClickListener(this);
         img_back.setOnClickListener(this);
         send.setOnClickListener(this);
+        collect.setOnClickListener(this);
+        imgPlots.setOnClickListener(this);
         setOnPauseListener(new OnPauseListener() {
             @Override
             public void onPause() {
@@ -163,6 +212,9 @@ public class CustomMediaController extends MediaController implements View.OnCli
                 danmakuView.start();
             }
         });
+        getPlots();
+        initChooseWindow();
+        initPlotsWindow();
         initDanmaWindow();
         initDanmaku();
         return view;
@@ -215,8 +267,6 @@ public class CustomMediaController extends MediaController implements View.OnCli
     }
 
 
-
-
     public void setFileName(String fileName) {
         this.fileName.setText(fileName);
     }
@@ -228,7 +278,8 @@ public class CustomMediaController extends MediaController implements View.OnCli
                 onBack();
                 break;
             case R.id.mediacontroller_scale:
-                onScale();
+                // TODO: 2017/5/22 竖屏状态暂时不支持，日后再添加这个功能
+                //onScale();
                 break;
             case R.id.mediacontroller_send:
                 if (PreferencesUtil.getSerializable(context, "user") != null) {
@@ -241,13 +292,140 @@ public class CustomMediaController extends MediaController implements View.OnCli
             case R.id.mediacontroller_danmu:
                 openCloseDanmaku();
                 break;
+            case R.id.mediacontroller_collect:
+                if (user != null || video != null) {
+                    addCollect();
+                }
+                break;
+            case R.id.mediacontroller_plots:
+                showPlots();
+                break;
+            case R.id.mediacontroller_like:
+                addLike();
+                break;
+            case R.id.mediacontroller_choose:
+                showChooseIndex();
+                break;
         }
     }
 
+    private void showChooseIndex() {
+        if (teleplayList != null) {
+            chooseIndexWindow.showAtLocation(mVideoView, Gravity.CENTER, 0, 0);
+        } else {
+            ToastUtils.showShort(context, getContext().getString(R.string.not_teleplay));
+        }
+    }
+
+    private void showPlots() {
+        if (plotsList.size() == 0) {
+            plotsList.add(new Plots(getContext().getString(R.string.no_plots)));
+        }
+        plotsAdapter.replaceList(plotsList);
+        plotsWindow.showAtLocation(activity.findViewById(R.id.video_center_layout), Gravity.CENTER, 0, 0);
+
+    }
+
+    private void addComment(String comments) {
+        if (user == null || video == null) {
+            ToastUtils.showShort(context, context.getResources().getString(R.string.login_first));
+            return;
+        }
+
+        ApiService apiService = new ApiService();
+        Observable<HttpResult> observable = apiService.getService(NetworkApi.class).addComment(video.getVideoid(), user.getNickname(), comments);
+        HttpUtil.getInstance().toSubscribe(observable, new ProgressSubscriber(context) {
+            @Override
+            protected void _onNext(Object o) {
+
+            }
+
+            @Override
+            protected void _onError(String message) {
+                LogUtils.e(TAG, "addComment", message);
+            }
+
+            @Override
+            protected void _onCompleted() {
+
+            }
+        }, null, ActivityLifeCycleEvent.PAUSE, lifeCycleEventPublishSubject1, false, false, false);
+    }
+
+    private void addLike() {
+        if (user == null || video == null) {
+            ToastUtils.showShort(context, context.getResources().getString(R.string.login_first));
+            return;
+        }
+        ApiService apiService = new ApiService();
+        Observable<HttpResult> observable = apiService.getService(NetworkApi.class).addLike(user.getUserid(), video.getVideoid());
+        HttpUtil.getInstance().toSubscribe(observable, new ProgressSubscriber(context) {
+            @Override
+            protected void _onNext(Object o) {
+                ToastUtils.showShort(context, getContext().getString(R.string.like_success));
+            }
+
+            @Override
+            protected void _onError(String message) {
+                ToastUtils.showShort(context, getContext().getString(R.string.have_been_like));
+            }
+
+            @Override
+            protected void _onCompleted() {
+
+            }
+        }, null, ActivityLifeCycleEvent.PAUSE, lifeCycleEventPublishSubject1, false, false, false);
+    }
+
+    private void addCollect() {
+        ApiService apiService = new ApiService();
+        Observable<HttpResult> observable = apiService.getService(NetworkApi.class).addCollection(user.getUserid(), video.getVideoid());
+        HttpUtil.getInstance().toSubscribe(observable, new ProgressSubscriber(context) {
+            @Override
+            protected void _onNext(Object o) {
+                ToastUtils.showShort(context, getContext().getString(R.string.add_collection_success));
+
+            }
+
+            @Override
+            protected void _onError(String message) {
+                ToastUtils.showShort(context, getContext().getString(R.string.video_hanve_been_collected));
+            }
+
+            @Override
+            protected void _onCompleted() {
+
+            }
+        }, null, ActivityLifeCycleEvent.PAUSE, lifeCycleEventPublishSubject1, false, false, false);
+
+
+    }
+
+    private void getPlots() {
+        ApiService apiService = new ApiService();
+        Observable<HttpResult<List<Plots>>> plots = apiService.getService(NetworkApi.class).getPlots(video.getVideoid());
+        HttpUtil.getInstance().toSubscribe(plots, new ProgressSubscriber<List<Plots>>(context) {
+
+            @Override
+            protected void _onNext(List<Plots> plotses) {
+                CustomMediaController.this.plotsList = plotses;
+            }
+
+            @Override
+            protected void _onError(String message) {
+                LogUtils.e(TAG, "onError", message);
+            }
+
+            @Override
+            protected void _onCompleted() {
+
+            }
+        }, null, ActivityLifeCycleEvent.PAUSE, lifeCycleEventPublishSubject1, false, false, false);
+    }
 
 
     private void sendMyDanmaku(String string) {
-
+        addComment(string);
         addDanmaku(string, true);
     }
 
@@ -257,11 +435,15 @@ public class CustomMediaController extends MediaController implements View.OnCli
         Button button = (Button) contentView.findViewById(R.id.pop_send);
         danmaWindow = new PopupWindow(contentView, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT, true);
         danmaWindow.setBackgroundDrawable(new BitmapDrawable());
+
         danmaWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
                 mVideoView.start();
                 danmakuView.show();
+                if (danmakuView.isPaused()) {
+                    danmakuView.start();
+                }
             }
         });
 
@@ -269,24 +451,43 @@ public class CustomMediaController extends MediaController implements View.OnCli
             @Override
             public void onClick(View v) {
                 String string = editText.getText().toString();
-                if (string != null) {
-                    sendMyDanmaku(string);
-                    danmaWindow.dismiss();
-                }
+                editText.setText("");
+                sendMyDanmaku(string);
+                danmaWindow.dismiss();
             }
         });
 
     }
 
     private void initChooseWindow() {
+        if (teleplayList == null) {
+            return;
+        }
         View popRootView = LayoutInflater.from(context).inflate(R.layout.pop_choose, null);
         RecyclerView popChooseRecycler = (RecyclerView) popRootView.findViewById(R.id.pop_choose_recycler);
-
+        popChooseRecycler.setLayoutManager(new GridLayoutManager(context, 6, LinearLayoutManager.VERTICAL, false));
+        chooseIndexAdapter = new ChooseIndexAdapter(context, teleplayList, popChooseRecycler, mVideoView, (VideoActivity) activity);
+        popChooseRecycler.setAdapter(chooseIndexAdapter);
+        chooseIndexWindow = new PopupWindow(popRootView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        chooseIndexWindow.setBackgroundDrawable(new BitmapDrawable());
+        chooseIndexWindow.setOutsideTouchable(true);
     }
 
     private void initPlotsWindow() {
         View popRootView = LayoutInflater.from(context).inflate(R.layout.pop_plots, null);
+        List<Plots> list = new ArrayList<>();
         RecyclerView popPlotsRecycler = (RecyclerView) popRootView.findViewById(R.id.pop_plots_recycler);
+        popPlotsRecycler.addItemDecoration(new MyDecoration(context, MyDecoration.VERTICAL));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        popPlotsRecycler.setLayoutManager(linearLayoutManager);
+        plotsAdapter = new PlotsAdapter(context, list, mVideoView, popPlotsRecycler);
+        popPlotsRecycler.setAdapter(plotsAdapter);
+        plotsWindow = new PopupWindow(popRootView);
+        plotsWindow.setBackgroundDrawable(new BitmapDrawable());
+        plotsWindow.setOutsideTouchable(true);
+        plotsWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+        plotsWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     private void onSend(View view) {

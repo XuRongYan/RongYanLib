@@ -11,6 +11,7 @@ import com.rongyan.rongyanlibrary.rxHttpHelper.http.HttpResult;
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.HttpUtil;
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.NetworkApi;
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.ProgressSubscriber;
+import com.rongyan.rongyanlibrary.util.LogUtils;
 import com.rongyan.rongyanlibrary.util.ToastUtils;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public class ClassificationPresenter implements ClassificationContract.Presenter {
+    private static final String TAG = "ClassificationPresenter";
     public static final int PER_PAGE = 20;
     private final ClassificationContract.View mView;
     private final Context mContext;
@@ -54,7 +56,7 @@ public class ClassificationPresenter implements ClassificationContract.Presenter
     @Override
     public void getList(String key) {
         ApiService apiService = new ApiService();
-        Observable<HttpResult<List<Video>>> videoInfo = apiService.getService(NetworkApi.class).getVideoInfo(PER_PAGE, page++, key);
+        Observable<HttpResult<List<Video>>> videoInfo = apiService.getService(NetworkApi.class).getVideoInfoByTag(PER_PAGE, page++, key, "?");
         HttpUtil.getInstance().toSubscribe(videoInfo, new ProgressSubscriber<List<Video>>(mContext) {
 
             @Override
@@ -76,7 +78,6 @@ public class ClassificationPresenter implements ClassificationContract.Presenter
 
             }
         }, null, ActivityLifeCycleEvent.PAUSE, lifeCycleSubject, false, false, true);
-
     }
 
     @Override
@@ -84,7 +85,7 @@ public class ClassificationPresenter implements ClassificationContract.Presenter
         page = 1;
         mView.setText(mContext.getString(R.string.load_more));
         ApiService apiService = new ApiService();
-        Observable<HttpResult<List<Video>>> videoInfo = apiService.getService(NetworkApi.class).getVideoInfo(20, page++, key);
+        Observable<HttpResult<List<Video>>> videoInfo = apiService.getService(NetworkApi.class).getVideoInfoByTag(20, page++, key, "?");
         HttpUtil.getInstance().toSubscribe(videoInfo, new ProgressSubscriber<List<Video>>(mContext) {
 
             @Override
@@ -108,4 +109,32 @@ public class ClassificationPresenter implements ClassificationContract.Presenter
 
         layout.setRefreshing(false);
     }
+
+    @Override
+    public void getFirstPage() {
+        ApiService apiService = new ApiService();
+        Observable<HttpResult<List<Video>>> mainPage = apiService.getService(NetworkApi.class).getMainPage(null);
+        HttpUtil.getInstance().toSubscribe(mainPage, new ProgressSubscriber<List<Video>>(mContext) {
+
+            @Override
+            protected void _onNext(List<Video> list) {
+                mView.getFirstPage(list);
+            }
+
+            @Override
+            protected void _onError(String message) {
+                ToastUtils.showShort(mContext, message);
+                LogUtils.e(TAG, "getFirstPage", message);
+            }
+
+            @Override
+            protected void _onCompleted() {
+
+            }
+        }, null, ActivityLifeCycleEvent.PAUSE, lifeCycleSubject, false, false, false);
+    }
+
+
+
+
 }

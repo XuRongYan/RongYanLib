@@ -1,11 +1,14 @@
 package com.rongyan.aikanvideo.mycollection;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.rongyan.aikanvideo.R;
+import com.rongyan.aikanvideo.video.VideoActivity;
 import com.rongyan.rongyanlibrary.base.BaseActivity;
 import com.rongyan.rongyanlibrary.util.ActivityUtils;
 
@@ -50,5 +53,18 @@ public class MyCollectionActivity extends BaseActivity {
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode) {
+            case Activity.RESULT_OK:
+                Bundle extras = data.getExtras();
+                Intent intent = new Intent(this, VideoActivity.class);
+                intent.putExtras(extras);
+                startActivity(intent);
+                break;
+        }
     }
 }

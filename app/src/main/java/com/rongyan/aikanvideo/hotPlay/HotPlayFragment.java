@@ -3,16 +3,16 @@ package com.rongyan.aikanvideo.hotPlay;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.rongyan.aikanvideo.R;
-import com.rongyan.aikanvideo.adapter.RankAdapter;
+import com.rongyan.aikanvideo.adapter.VideoAdapter;
 import com.rongyan.rongyanlibrary.base.BaseFragment;
-import com.rongyan.rongyanlibrary.rxHttpHelper.entity.Rank;
+import com.rongyan.rongyanlibrary.rxHttpHelper.entity.Video;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +28,9 @@ public class HotPlayFragment extends BaseFragment implements HotPlayContract.Vie
     @Bind(R.id.hot_play_recycler)
     RecyclerView recyclerView;
 
-    private List<Rank> list = new ArrayList<>();
+    private List<Video> list = new ArrayList<>();
     private HotPlayContract.Presenter mPresenter;
+    private VideoAdapter adapter;
 
     public static HotPlayFragment newInstance() {
 
@@ -42,9 +43,10 @@ public class HotPlayFragment extends BaseFragment implements HotPlayContract.Vie
 
     @Override
     protected void initViews(View rootView) {
-        RankAdapter adapter = new RankAdapter(getContext(), list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new VideoAdapter(getContext(), list);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         recyclerView.setAdapter(adapter);
+        mPresenter.getRank();
     }
 
     @Override
@@ -69,5 +71,10 @@ public class HotPlayFragment extends BaseFragment implements HotPlayContract.Vie
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+    }
+
+    @Override
+    public void getList(List<Video> list) {
+        adapter.addListAtEndAndNotify(list);
     }
 }

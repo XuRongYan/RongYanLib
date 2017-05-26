@@ -16,13 +16,15 @@ import java.util.List;
 public interface MainContract {
     interface Presenter extends BasePresenter {
         void getFirstPage();
-        void refresh(SwipeRefreshLayout swipeRefreshLayout);
+        void refresh(int userid, final SwipeRefreshLayout swipeRefreshLayout);
+        void getMainLike(int userid);
     }
 
     interface View extends BaseView<Presenter> {
         void initViews();
         void initRecyclerView();
         void getList(List<Video> list);
+        void getMainLike(List<Video> list);
         void load();
         void endLoad();
     }

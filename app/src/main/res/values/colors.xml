@@ -12,4 +12,5 @@
     <color name="colorTransparentGray">#77000000</color>
     <color name="colorBlue">#1296db</color>
     <color name="colorSearchText">#f4f3f3</color>
+    <color name="themeBackground">#ededed</color>
 </resources>

@@ -8,23 +8,23 @@
     tools:context="com.rongyan.aikanvideo.video.VideoActivity">
 
     <io.vov.vitamio.widget.CenterLayout
+        android:id="@+id/video_center_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <io.vov.vitamio.widget.VideoView
             android:id="@+id/surface_view"
-            android:layout_width="368dp"
-            android:layout_height="495dp"
-            tools:layout_editor_absoluteX="8dp"
-            tools:layout_editor_absoluteY="8dp" />
-
-        <master.flame.danmaku.ui.widget.DanmakuView
-            android:id="@+id/danmuku_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:background="@color/transparent"
+             />
+
     </io.vov.vitamio.widget.CenterLayout>
 
-
+    <master.flame.danmaku.ui.widget.DanmakuView
+        android:id="@+id/danmuku_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text=""
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/colorPrimary" />
 
         <TextView
             android:id="@+id/load_rate"
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text=""
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/colorPrimary" />
     </LinearLayout>
 
     <!--<FrameLayout-->

@@ -45,7 +45,7 @@ public class RetrofitCache {
             return Observable.concat(fromCache, fromNetwork).takeFirst(new Func1<T, Boolean>() {
                 @Override
                 public Boolean call(T t) {
-                    return t != null;
+                    return true;
                 }
             });
         }

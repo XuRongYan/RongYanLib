@@ -12,7 +12,9 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.Checkable;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
@@ -214,6 +216,24 @@ public class ViewHolder extends RecyclerView.ViewHolder {
     public ViewHolder setChecked(int viewId, boolean checked) {
         Checkable view = getView(viewId);
         view.setChecked(checked);
+        return this;
+    }
+
+    public ViewHolder setCheckBoxText(int viewId, String text) {
+        CheckBox view = getView(viewId);
+        view.setText(text);
+        return this;
+    }
+
+    public ViewHolder addOnCheckedChangedListener(int viewId, CompoundButton.OnCheckedChangeListener listener) {
+        CheckBox checkBox = getView(viewId);
+        checkBox.setOnCheckedChangeListener(listener);
+        return this;
+    }
+
+    public ViewHolder setCheckState(int viewId, boolean isCheck) {
+        CheckBox checkBox = getView(viewId);
+        checkBox.setChecked(isCheck);
         return this;
     }
 

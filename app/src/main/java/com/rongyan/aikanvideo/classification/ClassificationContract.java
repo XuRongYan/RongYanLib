@@ -16,11 +16,14 @@ public interface ClassificationContract {
     interface Presenter extends BasePresenter {
         void getList(String key);
         void refresh(String key, SwipeRefreshLayout layout);
+        void getFirstPage();
+
     }
 
     interface View extends BaseView<Presenter> {
         void getList(List<Video> list);
         void refreshList(List<Video> list);
         void setText(String text);
+        void getFirstPage(List<Video> list);
     }
 }

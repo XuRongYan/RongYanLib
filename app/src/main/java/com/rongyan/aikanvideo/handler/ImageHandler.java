@@ -62,7 +62,9 @@ public class ImageHandler extends Handler {
             case MSG_UPDATE_IMAGE:
                 //翻页
                 currentItem ++;
+                LogUtils.d("ImageHandler", "update", "vpCurrentItem:" + mainFragment.viewPager.getCurrentItem() + " currentItem:" + currentItem);
                 mainFragment.viewPager.setCurrentItem(currentItem);
+
                 //准备下次播放
                 mainFragment.handler.sendEmptyMessageDelayed(MSG_UPDATE_IMAGE, MSG_DELAY);
                 break;

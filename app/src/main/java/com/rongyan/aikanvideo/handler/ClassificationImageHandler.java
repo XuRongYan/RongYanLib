@@ -61,6 +61,7 @@ public class ClassificationImageHandler extends Handler {
             case MSG_UPDATE_IMAGE:
                 //翻页
                 currentItem ++;
+                LogUtils.d("ImageHandler", "update", "vpCurrentItem:" + classTabFragment.viewPager.getCurrentItem() + " currentItem:" + currentItem);
                 classTabFragment.viewPager.setCurrentItem(currentItem);
                 //准备下次播放
                 classTabFragment.handler.sendEmptyMessageDelayed(MSG_UPDATE_IMAGE, MSG_DELAY);

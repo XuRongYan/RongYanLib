@@ -1,5 +1,7 @@
 package com.rongyan.aikanvideo.main;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -28,6 +30,8 @@ import com.rongyan.aikanvideo.login.LoginActivity;
 import com.rongyan.aikanvideo.mycollection.MyCollectionActivity;
 import com.rongyan.aikanvideo.order.OrderFragment;
 import com.rongyan.aikanvideo.search.SearchActivity;
+import com.rongyan.aikanvideo.setting.SettingActivity;
+import com.rongyan.aikanvideo.video.VideoActivity;
 import com.rongyan.aikanvideo.watchhistory.WatchHistoryActivity;
 import com.rongyan.rongyanlibrary.ImageLoader.ImageLoader;
 import com.rongyan.rongyanlibrary.ImageLoader.ImageLoaderUtil;
@@ -142,6 +146,7 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
                         }
                         break;
                     case R.id.my_setting:
+                        goActivity(SettingActivity.class);
                         break;
                     case R.id.my_download:
                         if (PreferencesUtil.getSerializable(MainActivity.this, "user") != null) {
@@ -184,7 +189,6 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
 
 
     }
-
 
 
     @Override
@@ -283,5 +287,18 @@ public class MainActivity extends BaseActivity implements SearchView.OnQueryText
     public boolean onQueryTextChange(String newText) {
 
         return false;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode) {
+            case Activity.RESULT_OK:
+                Bundle extras = data.getExtras();
+                Intent intent = new Intent(this, VideoActivity.class);
+                intent.putExtras(extras);
+                startActivity(intent);
+                break;
+        }
     }
 }

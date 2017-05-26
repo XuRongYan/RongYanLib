@@ -1,7 +1,6 @@
 package com.rongyan.aikanvideo.search;
 
 import android.content.Context;
-import android.support.v4.util.Pair;
 
 import com.rongyan.aikanvideo.OnSearchCompleteListener;
 import com.rongyan.aikanvideo.R;
@@ -16,7 +15,6 @@ import com.rongyan.rongyanlibrary.util.LogUtils;
 import com.rongyan.rongyanlibrary.util.ToastUtils;
 
 import java.util.List;
-import java.util.Map;
 
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -26,6 +24,7 @@ import rx.subjects.PublishSubject;
  */
 
 public class SearchPresenter implements SearchContract.Presenter {
+    private static final String TAG_LOG = "SearchPresenter";
     public static final int PER_PAGE = 20;
     private int sPage = 1;
     private final String TAG;
@@ -59,6 +58,7 @@ public class SearchPresenter implements SearchContract.Presenter {
 
     @Override
     public void submitQuery(String text) {
+        LogUtils.d(TAG_LOG, "submitQuery", "getTelePlay");
         qurey = text;
         ApiService apiService = new ApiService();
         Observable<HttpResult<List<Video>>> videoInfo = apiService
@@ -70,23 +70,46 @@ public class SearchPresenter implements SearchContract.Presenter {
                     sPage--;
                     mView.setText(mContext.getResources().getString(R.string.no_more));
                 }
-                TeleplayFilter filter = new TeleplayFilter(mContext, lifeCycleEventPublishSubject, list);
-                filter.setOnCompleteListener(new TeleplayFilter.OnCompleteListener() {
-                    @Override
-                    public void onComplete(Pair<Map<Integer, List<Video>>, List<Video>> pair) {
-                        mView.getList(pair.second);
-                        LogUtils.d(TAG, "onComplete", pair.second.toString());
-                        if (mOnSearchCompleteListener != null) {
-                            mOnSearchCompleteListener.onComplete();
-                        }
-                    }
-                });
-                filter.filter();
+                mView.getList(list);
+                mView.closeSearchView();
             }
 
             @Override
             protected void _onError(String message) {
                 ToastUtils.showShort(mContext, message);
+                mView.closeSearchView();
+            }
+
+            @Override
+            protected void _onCompleted() {
+
+            }
+        }, null, ActivityLifeCycleEvent.PAUSE, lifeCycleEventPublishSubject, false, false, true);
+    }
+
+    @Override
+    public void getTelePlay(String key) {
+        LogUtils.d(TAG_LOG, "getTelePlay", "getTelePlay");
+        ApiService apiService = new ApiService();
+        Observable<HttpResult<List<List<Video>>>> teleplay = apiService.getService(NetworkApi.class).getTeleplay(PER_PAGE, sPage++, key, "电视剧");
+        HttpUtil.getInstance().toSubscribe(teleplay, new ProgressSubscriber<List<List<Video>>>(mContext) {
+
+            @Override
+            protected void _onNext(List<List<Video>> lists) {
+                if (lists.size() < PER_PAGE - 1) {
+                    mView.setText(mContext.getString(R.string.no_more));
+                    if (lists.size() <= 0) {
+                        sPage--;
+                    }
+                }
+                mView.getTeleList(lists);
+                mView.closeSearchView();
+            }
+
+            @Override
+            protected void _onError(String message) {
+                ToastUtils.showShort(mContext, "电视剧：" + message);
+                mView.closeSearchView();
             }
 
             @Override

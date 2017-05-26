@@ -13,6 +13,7 @@ import java.util.List;
 public interface SearchContract {
     interface Presenter extends BasePresenter {
         void submitQuery(String text);
+        void getTelePlay(String key);
     }
 
     interface View extends BaseView<Presenter> {
@@ -20,5 +21,7 @@ public interface SearchContract {
         void refreshList(List<Video> list);
         void setText(String text);
         void closeSearchView();
+
+        void getTeleList(List<List<Video>> lists);
     }
 }

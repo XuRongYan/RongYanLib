@@ -1,5 +1,6 @@
 package com.rongyan.aikanvideo.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +21,10 @@ import java.util.List;
 
 public class VideoAdapter extends CommonAdapter<Video> {
 
+    public VideoAdapter(Context context, List<Video> list) {
+        super(context, list);
+    }
+
     public VideoAdapter(Context context, List<Video> list, RecyclerView recyclerView) {
         super(context, list, recyclerView);
     }
@@ -31,7 +36,7 @@ public class VideoAdapter extends CommonAdapter<Video> {
 
     @Override
     public void onBindVH(ViewHolder viewHolder, final Video item, int position) {
-        viewHolder.setImageUrl(R.id.video_img, item.getImageUrlAdress(), R.drawable.ic_failure)
+        viewHolder.setImageUrl(R.id.video_img, item.getImageURL(), R.drawable.ic_failure)
                 .setText(R.id.video_title, item.getTitle())
                 .setText(R.id.video_news, item.getTitlenew());
         viewHolder.getConvertView().setOnClickListener(new View.OnClickListener() {
@@ -41,7 +46,7 @@ public class VideoAdapter extends CommonAdapter<Video> {
                 bundle.putSerializable("video", item);
                 Intent intent = new Intent(context, AdvertisementActivity.class);
                 intent.putExtras(bundle);
-                context.startActivity(intent);
+                ((Activity) context).startActivityForResult(intent, 1);
             }
         });
 

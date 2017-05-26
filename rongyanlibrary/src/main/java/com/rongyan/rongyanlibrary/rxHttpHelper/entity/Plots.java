@@ -13,6 +13,10 @@ public class Plots extends BaseEntity {
     private double ratio;
 
 
+    public Plots(String title) {
+        this.title = title;
+    }
+
     public Plots(int videoid, long position, String title, double ratio) {
         this.videoid = videoid;
         this.position = position;

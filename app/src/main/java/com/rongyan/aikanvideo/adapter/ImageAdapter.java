@@ -8,8 +8,8 @@ import android.view.ViewParent;
 import android.widget.ImageView;
 
 import com.rongyan.rongyanlibrary.rxHttpHelper.entity.Video;
+import com.rongyan.rongyanlibrary.util.LogUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,28 +17,51 @@ import java.util.List;
  */
 
 public class ImageAdapter extends PagerAdapter {
-    ArrayList<ImageView> list;
+    private static final String TAG = "ImageAdapter";
+
+    List<ImageView> list;
     private Context context;
     private List<Video> videoList;
 
-    public ImageAdapter(ArrayList<ImageView> list, Context context) {
+    private int mCount = 0;
+
+    public ImageAdapter(List<ImageView> list, Context context) {
         this.list = list;
         this.context = context;
+        LogUtils.d(TAG, "ImageAdapter", "constructor");
     }
 
     @Override
     public int getCount() {
         //设置成最大，用户看不到边界
+        LogUtils.d(TAG, "ImageAdapter", "constructor");
         return Integer.MAX_VALUE;
     }
 
     @Override
+    public int getItemPosition(Object object) {
+        if (mCount > 0) {
+            mCount --;
+            return POSITION_NONE;
+        }
+        return super.getItemPosition(object);
+    }
+
+    @Override
     public boolean isViewFromObject(View view, Object object) {
+        LogUtils.d(TAG, "ImageAdapter", "isViewFromObject:" + (view == object));
         return view == object;
     }
 
     @Override
+    public void notifyDataSetChanged() {
+        mCount = getCount();
+        super.notifyDataSetChanged();
+    }
+
+    @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
+        LogUtils.d(TAG, "ImageAdapter", "destroyItem");
         //super.destroyItem(container, position, object);
     }
 
@@ -48,7 +71,9 @@ public class ImageAdapter extends PagerAdapter {
         position %= list.size();
         if (position < 0) {
             position = list.size() + position;
+
         }
+        LogUtils.d(TAG, "instantiateItem", position + "");
         ImageView imageView = list.get(position);
         //imageView.setImageResource(R.mipmap.ic_launcher);
         ViewParent parent = imageView.getParent();
@@ -66,5 +91,13 @@ public class ImageAdapter extends PagerAdapter {
         container.addView(imageView);
 
         return imageView;
+    }
+
+    public void replaceList(List<Video> list, List<ImageView> imgList) {
+        this.list.clear();
+        this.list = imgList;
+        this.videoList = list;
+        notifyDataSetChanged();
+
     }
 }

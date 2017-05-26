@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.orhanobut.hawk.Hawk;
 import com.rongyan.aikanvideo.R;
+import com.rongyan.aikanvideo.forgetpsw.ForgetPswActivity;
 import com.rongyan.aikanvideo.main.MainActivity;
 import com.rongyan.aikanvideo.register.RegisterActivity;
 import com.rongyan.rongyanlibrary.base.BaseAppManager;
@@ -134,7 +135,7 @@ public class LoginFragment extends BaseFragment implements LoginContract.View {
         mPresenter.unsubscribe();
     }
 
-    @OnClick({R.id.btn_login, R.id.login_register})
+    @OnClick({R.id.btn_login, R.id.login_register, R.id.login_forget_psw})
     public void click(View view) {
         switch (view.getId()) {
             case R.id.btn_login:
@@ -143,6 +144,9 @@ public class LoginFragment extends BaseFragment implements LoginContract.View {
                 break;
             case R.id.login_register:
                 goActivity(RegisterActivity.class);
+                break;
+            case R.id.login_forget_psw:
+                goActivity(ForgetPswActivity.class);
                 break;
         }
     }

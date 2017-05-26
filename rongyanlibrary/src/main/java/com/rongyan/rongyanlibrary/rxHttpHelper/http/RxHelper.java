@@ -41,7 +41,7 @@ public class RxHelper {
                     @Override
                     public Observable<T> call(HttpResult<T> tHttpResult) {
                         LogUtils.e(this.getClass().getName(), "RxHelper", tHttpResult.getResultCode() + "");
-                        //如果code等于0则成功创建数据，否则交给自定义异常处理
+                        //如果code等于1则成功创建数据，否则交给自定义异常处理
                         if (tHttpResult.getResultCode() == 1 || tHttpResult.getResultCode() == 101 || tHttpResult.getResultCode() == 100) {
                             return createData(tHttpResult.getData(), tHttpResult.getResultCode());
                         } else {

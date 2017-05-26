@@ -5,16 +5,12 @@
     android:gravity="center_vertical"
     >
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:src="@drawable/recycler_header_img"/>
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimary"
+        android:layout_marginStart="8dp"
         android:text="强档新剧" />
 
 </LinearLayout>

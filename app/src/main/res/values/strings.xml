@@ -47,6 +47,28 @@
     <string name="login_first">请先登录</string>
     <string name="watch_history">观看历史</string>
     <string name="download_center">离线中心</string>
+    <string name="add_collection_success">添加收藏成功</string>
+    <string name="choose_index">选集</string>
+    <string name="no_plots">该视频没有编辑看点</string>
+    <string name="why_skip">为什么要跳过这些广告？</string>
+    <string name="adv_too_long">广告时间太长了</string>
+    <string name="adv_too_boring">广告太无聊了</string>
+    <string name="not_accept_recommend">不接受安利</string>
+    <string name="like_success">点赞成功</string>
+    <string name="have_been_like">您已经点过赞</string>
+    <string name="send_danma">发射弹幕</string>
+    <string name="dont_like">推荐商品不喜欢</string>
+    <string name="design_dont_like">广告设计不喜欢</string>
+    <string name="video_hanve_been_collected">您已经收藏过该视频了</string>
+    <string name="system_update">系统更新</string>
+    <string name="about_us">关于我们</string>
+    <string name="submit">提交</string>
+    <string name="psw_update_success">密码修改成功</string>
+    <string name="not_teleplay">该视频不是剧集</string>
+    <string name="add_preference_success">添加个人喜好成功</string>
+    <string name="add_fail">添加失败</string>
+    <string name="full_info_success">完善信息成功</string>
+    <string name="sunmit_fail">提交失败</string>
 
 
 </resources>

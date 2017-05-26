@@ -1,0 +1,139 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.rongyan.aikanvideo.setting.SettingFragment"
+    android:background="@color/themeBackground">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:foreground="@drawable/touchable_white"
+        android:layout_marginTop="@dimen/margin_2dip">
+
+        <TextView
+            android:id="@+id/setting_only_wifi"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:text="仅wifi环境下载"
+            android:textColor="@color/gray"
+            android:textSize="14sp" />
+
+        <Switch
+            android:id="@+id/setting_only_wifi_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="16dp"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_setting_about_us"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:foreground="@drawable/touchable_white"
+        android:layout_marginTop="@dimen/margin_2dip">
+        <TextView
+            android:id="@+id/setting_only_wifi_about_us"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:textSize="14sp"
+            android:textColor="@color/gray"
+            android:gravity="center_vertical"
+            android:text="@string/about_us"
+            android:paddingStart="16dp"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_setting_complete_info"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:foreground="@drawable/touchable_white"
+        android:layout_marginTop="@dimen/margin_2dip">
+        <TextView
+            android:id="@+id/setting_complete_info"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:textSize="14sp"
+            android:textColor="@color/gray"
+            android:gravity="center_vertical"
+            android:text="完善个人信息"
+            android:paddingStart="16dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_setting_add_preference"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:foreground="@drawable/touchable_white"
+        android:layout_marginTop="@dimen/margin_2dip">
+        <TextView
+            android:id="@+id/setting_add_preference"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:textSize="14sp"
+            android:textColor="@color/gray"
+            android:gravity="center_vertical"
+            android:text="添加偏好"
+            android:paddingStart="16dp"/>
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/ll_setting_system_update"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:foreground="@drawable/touchable_white"
+        android:layout_marginTop="@dimen/margin_2dip">
+        <TextView
+            android:id="@+id/setting_about_us"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:textSize="14sp"
+            android:textColor="@color/gray"
+            android:gravity="center_vertical"
+            android:text="@string/system_update"
+            android:paddingStart="16dp"/>
+
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/btn_setting_exit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="120dp"
+        android:background="@drawable/btn_corner"
+        android:text="退出登录"
+        android:textSize="18sp"/>
+
+
+</LinearLayout>

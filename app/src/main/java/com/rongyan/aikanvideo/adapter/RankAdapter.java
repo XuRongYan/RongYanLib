@@ -1,15 +1,18 @@
 package com.rongyan.aikanvideo.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.rongyan.aikanvideo.R;
-import com.rongyan.rongyanlibrary.rxHttpHelper.entity.Rank;
+import com.rongyan.aikanvideo.advertisement.AdvertisementActivity;
+import com.rongyan.rongyanlibrary.CommonAdapter.CommonAdapter;
+import com.rongyan.rongyanlibrary.CommonAdapter.ViewHolder;
+import com.rongyan.rongyanlibrary.rxHttpHelper.entity.Video;
 
 import java.util.List;
 
@@ -17,53 +20,48 @@ import java.util.List;
  * Created by XRY on 2017/5/7.
  */
 
-public class RankAdapter extends RecyclerView.Adapter<RankAdapter.ViewHolder> {
-    private List<Rank> list;
-    private Context context;
+public class RankAdapter extends CommonAdapter<Video> {
 
-    public RankAdapter(Context context, List<Rank> list) {
-        this.context = context;
-        this.list = list;
+    public RankAdapter(Context context, List<Video> list) {
+        super(context, list);
+    }
+
+    public RankAdapter(Context context, List<Video> list, RecyclerView recyclerView) {
+        super(context, list, recyclerView);
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rank_item, parent, false);
-        return new ViewHolder(view);
+    public int setLayoutId(int position) {
+        return R.layout.rank_item;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        Rank rank = list.get(position);
-        TextView tvRank = (TextView) holder.itemView.findViewById(R.id.rank_item_text_rank);
-        TextView tvTitle = (TextView) holder.itemView.findViewById(R.id.rank_item_text_title);
-        if (rank.getRank() <= 3) {
+    public void onBindVH(ViewHolder viewHolder, final Video item, int position) {
+
+        if (position < 3) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                tvRank.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary, context.getTheme()));
+                viewHolder.setBackgroundColor(R.id.rank_item_text_rank, context.getResources().getColor(R.color.colorPrimary, context.getTheme()));
             } else {
-                tvRank.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary));
+                viewHolder.setBackgroundColor(R.id.rank_item_text_rank, context.getResources().getColor(R.color.colorPrimary));
             }
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                tvRank.setBackgroundColor(context.getResources().getColor(R.color.colorButtonGray, context.getTheme()));
+                viewHolder.setBackgroundColor(R.id.rank_item_text_rank, context.getResources().getColor(R.color.colorButtonGray, context.getTheme()));
             } else {
-                tvRank.setBackgroundColor(context.getResources().getColor(R.color.colorButtonGray));
+                viewHolder.setBackgroundColor(R.id.rank_item_text_rank, context.getResources().getColor(R.color.colorButtonGray));
             }
         }
-        tvRank.setText(rank.getRank() + "");
-        tvTitle.setText(rank.getTitle());
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return list.size();
-    }
-
-    static class ViewHolder extends RecyclerView.ViewHolder{
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-        }
+        viewHolder.setText(R.id.rank_item_text_rank, (position + 1) + "")
+                .setText(R.id.rank_item_text_title, item.getTitle())
+                .getConvertView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, AdvertisementActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("video", item);
+                intent.putExtras(bundle);
+                ((Activity) context).startActivityForResult(intent, 1);
+            }
+        });
     }
 }

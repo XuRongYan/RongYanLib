@@ -11,6 +11,7 @@ import com.rongyan.rongyanlibrary.rxHttpHelper.http.HttpResult;
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.HttpUtil;
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.NetworkApi;
 import com.rongyan.rongyanlibrary.rxHttpHelper.http.ProgressSubscriber;
+import com.rongyan.rongyanlibrary.util.LogUtils;
 import com.rongyan.rongyanlibrary.util.ToastUtils;
 
 import rx.Observable;
@@ -25,6 +26,7 @@ import static com.rongyan.aikanvideo.register.RegisterFragment.UNCLICKABLE;
  */
 
 public class RegisterPresenter implements RegisterContract.Presenter {
+    private static final String TAG = "RegisterPresenter";
     private final RegisterContract.View mView;
     private final Context mContext;
     private final PublishSubject<ActivityLifeCycleEvent> activityLifeCycleEventPublishSubject;
@@ -85,11 +87,13 @@ public class RegisterPresenter implements RegisterContract.Presenter {
             HttpUtil.getInstance().toSubscribe(observable, new ProgressSubscriber(mContext) {
                 @Override
                 protected void _onNext(Object o) {
+                    LogUtils.e(TAG, "register", "success");
                     mView.onRegisterSuc();
                 }
 
                 @Override
                 protected void _onError(String message) {
+                    LogUtils.e(TAG, "register error", message);
                     ToastUtils.showShort(mContext, message);
                 }
 

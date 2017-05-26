@@ -19,12 +19,14 @@
             android:name="BaseUrl"
             android:value="http://139.224.164.183:1031/" />
 
-        <activity android:name=".login.LoginActivity" />
+        <activity
+            android:name=".login.LoginActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
             android:name=".main.MainActivity"
-            android:label="@string/string_main"
-            android:screenOrientation="portrait"
-            android:configChanges="keyboardHidden|orientation|screenSize">
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="爱看"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,9 +40,10 @@
         <activity android:name=".rank.RankActivity" />
         <activity
             android:name=".video.VideoActivity"
-            android:screenOrientation="landscape"
-            />
-        <activity android:name=".search.SearchActivity" />
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".search.SearchActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <provider
             android:name="br.com.mauker.materialsearchview.db.HistoryProvider"
@@ -52,9 +55,12 @@
         <activity android:name=".watchhistory.WatchHistoryActivity" />
         <activity android:name=".mycollection.MyCollectionActivity" />
         <activity android:name=".download.DownloadActivity" />
-        <activity android:name=".advertisement.AdvertisementActivity"
-            android:screenOrientation="landscape"
-            />
+        <activity
+            android:name=".advertisement.AdvertisementActivity"
+            android:screenOrientation="landscape" />
+        <activity android:name=".setting.SettingActivity" />
+        <activity android:name=".forgetpsw.ForgetPswActivity" />
+        <activity android:name=".fulluserinfo.FullUserInfoActivity"></activity>
     </application>
 
 </manifest>

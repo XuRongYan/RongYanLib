@@ -4,6 +4,7 @@ package com.rongyan.aikanvideo.classification;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
@@ -18,7 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.rongyan.aikanvideo.R;
-import com.rongyan.aikanvideo.adapter.ImageAdapter;
+import com.rongyan.aikanvideo.adapter.ImageUrlAdapter;
 import com.rongyan.aikanvideo.adapter.VideoAdapter;
 import com.rongyan.aikanvideo.handler.ClassificationImageHandler;
 import com.rongyan.aikanvideo.handler.ImageHandler;
@@ -27,6 +28,7 @@ import com.rongyan.rongyanlibrary.CommonAdapter.CommonAdapter;
 import com.rongyan.rongyanlibrary.CommonAdapter.ViewHolder;
 import com.rongyan.rongyanlibrary.base.BaseFragment;
 import com.rongyan.rongyanlibrary.rxHttpHelper.entity.Video;
+import com.rongyan.rongyanlibrary.util.LogUtils;
 
 import net.lucode.hackware.magicindicator.MagicIndicator;
 import net.lucode.hackware.magicindicator.ViewPagerHelper;
@@ -60,6 +62,9 @@ public class ClassTabFragment extends BaseFragment implements ClassificationCont
     private VideoAdapter videoAdapter;
     private String title;
     private TextView footText;
+    private List<Video> videoList = new ArrayList<>();
+    private ImageUrlAdapter imageUrlAdapter;
+    private ScaleCircleNavigator scaleCircleNavigator;
 
 
     public static ClassTabFragment newInstance() {
@@ -78,6 +83,13 @@ public class ClassTabFragment extends BaseFragment implements ClassificationCont
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mPresenter.getFirstPage();
+
+    }
+
+    @Override
     protected int getContentViewID() {
         return R.layout.fragment_class_tab;
     }
@@ -90,6 +102,7 @@ public class ClassTabFragment extends BaseFragment implements ClassificationCont
         initRefresh();
         initPlayIndicator();
         initRecyclerView();
+
         return rootView;
     }
 
@@ -112,31 +125,35 @@ public class ClassTabFragment extends BaseFragment implements ClassificationCont
         ButterKnife.unbind(this);
     }
 
-    private void initPlayIndicator() {
-        ImageView imageView1 = new ImageView(getActivity());
-        ImageView imageView2 = new ImageView(getActivity());
-        ImageView imageView3 = new ImageView(getActivity());
-        imageView1.setImageResource(R.mipmap.ic_launcher);
-        imageView2.setImageResource(R.mipmap.found);
-        imageView3.setImageResource(R.mipmap.subscribe);
-        list = new ArrayList<>();
-        list.add(imageView1);
-        list.add(imageView2);
-        list.add(imageView3);
-        viewPager.setAdapter(new ImageAdapter(list, getActivity()));
+    private void initPlayIndicator() {final List<ImageView> imgList = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            LogUtils.d("ImageAdapter", "fori", i + " ");
+            ImageView image = new ImageView(getActivity());
+            image.setImageResource(R.mipmap.ic_launcher);
+            videoList.add(new Video());
+            imgList.add(image);
+        }
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+                //indicator.onPageScrolled(position, positionOffset, positionOffsetPixels);
             }
 
             @Override
             public void onPageSelected(int position) {
+                //indicator.onPageSelected(position);
+                if (position <= 2 || position >= imageUrlAdapter.getCount() - 3) {
+                    int page = imageUrlAdapter.getItemIndexForPosition(position);
+                    int newPosition = imageUrlAdapter.getStartPageIndex() + page;
+                    viewPager.setCurrentItem(newPosition - 1);
+                    viewPager.setCurrentItem(newPosition, true);
+                }
                 handler.sendMessage(Message.obtain(handler, ImageHandler.MSG_PAGE_CHANGED, position, 0));
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
+                //indicator.onPageScrollStateChanged(state);
                 switch (state) {
                     case ViewPager.SCROLL_STATE_DRAGGING:
                         handler.sendEmptyMessage(ImageHandler.MSG_KEEP_SILENT);
@@ -149,20 +166,19 @@ public class ClassTabFragment extends BaseFragment implements ClassificationCont
                 }
             }
         });
-        viewPager.setCurrentItem(Integer.MAX_VALUE / 2);
-        //开始轮播效果
-        handler.sendEmptyMessageDelayed(ImageHandler.MSG_UPDATE_IMAGE, ImageHandler.MSG_DELAY);
 
-        initMagicIndicator();
+        imageUrlAdapter = new ImageUrlAdapter(imgList, videoList, getActivity());
+        viewPager.setAdapter(imageUrlAdapter);
     }
 
-    private void initMagicIndicator() {
-        ScaleCircleNavigator scaleCircleNavigator = new ScaleCircleNavigator(getActivity());
-        scaleCircleNavigator.setCircleCount(list.size());
+    private void initMagicIndicator(int size) {
+        scaleCircleNavigator = new ScaleCircleNavigator(getActivity());
+        scaleCircleNavigator.setCircleCount(size);
         scaleCircleNavigator.setNormalCircleColor(Color.LTGRAY);
         scaleCircleNavigator.setSelectedCircleColor(Color.DKGRAY);
         indicator.setNavigator(scaleCircleNavigator);
         ViewPagerHelper.bind(indicator, viewPager);
+
     }
 
     private void initRecyclerView() {
@@ -171,12 +187,26 @@ public class ClassTabFragment extends BaseFragment implements ClassificationCont
         recyclerView.setLayoutManager(manager);
         videoAdapter = new VideoAdapter(getActivity(), list, recyclerView);
         recyclerView.setAdapter(videoAdapter);
+
         videoAdapter.addHeaderView(R.layout.recycler_header);
         videoAdapter.addFooterView(R.layout.recycler_footer);
         videoAdapter.setOnBindHeaderOrFooter(new CommonAdapter.OnBindHeaderOrFooter() {
             @Override
             public void onHeader(ViewHolder viewHolder) {
-
+                switch (title) {
+                    case "电视剧":
+                        viewHolder.setText(R.id.textView, "强档新剧");
+                        break;
+                    case "电影":
+                        viewHolder.setText(R.id.textView, "最新上映");
+                        break;
+                    case "综艺":
+                        viewHolder.setText(R.id.textView, "热播综艺");
+                        break;
+                    case "新闻":
+                        viewHolder.setText(R.id.textView, "热点新闻");
+                        break;
+                }
             }
 
             @Override
@@ -238,6 +268,34 @@ public class ClassTabFragment extends BaseFragment implements ClassificationCont
         if (footText != null) {
             footText.setText(text);
         }
+    }
+
+    @Override
+    public void getFirstPage(List<Video> list) {
+        initMagicIndicator(list.size());
+        List<ImageView> imgList = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            ImageView imageView = new ImageView(getActivity());
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imgList.add(imageView);
+        }
+
+        notifyRefreshAdapter(imgList, list);
+
+        viewPager.setCurrentItem(imageUrlAdapter.getStartPageIndex());
+
+        //开始轮播效果
+        handler.sendEmptyMessageDelayed(ImageHandler.MSG_UPDATE_IMAGE, ImageHandler.MSG_DELAY);
+    }
+
+
+
+    private void notifyRefreshAdapter(List<ImageView> imgList, List<Video> videoList) {
+        if (imageUrlAdapter != null) {
+            imageUrlAdapter = null;
+        }
+        imageUrlAdapter = new ImageUrlAdapter(imgList, videoList, getActivity());
+        viewPager.setAdapter(imageUrlAdapter);
     }
 
     //找到数组中的最大值

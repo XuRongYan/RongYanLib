@@ -55,9 +55,11 @@ public class LoginPresenter implements LoginContract.Presenter {
 
         if (TextUtils.isEmpty(username)) {
             cancel = mView.setUsernameError(context.getString(R.string.string_username_required));
-        } else if (!mView.isUserNameValid()) {
-            cancel = mView.setUsernameError(context.getString(R.string.string_invalid_username));
-        } else if (TextUtils.isEmpty(psw)) {
+        }
+//        } else if (!mView.isUserNameValid()) {
+//            cancel = mView.setUsernameError(context.getString(R.string.string_invalid_username));
+//        }
+        else if (TextUtils.isEmpty(psw)) {
             cancel = mView.setPswError(context.getString(R.string.string_psw_required));
         } else if (!mView.isPasswordValid()) {
             cancel = mView.setPswError(context.getString(R.string.string_invalid_psw));
@@ -86,7 +88,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                 protected void _onCompleted() {
 
                 }
-            }, "user", ActivityLifeCycleEvent.PAUSE, lifeCycleSubject, true, false, true);
+            }, "user", ActivityLifeCycleEvent.PAUSE, lifeCycleSubject, true, true, true);
         }
     }
 }

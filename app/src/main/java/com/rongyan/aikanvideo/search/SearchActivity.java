@@ -1,5 +1,7 @@
 package com.rongyan.aikanvideo.search;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 import com.rongyan.aikanvideo.OnSearchCompleteListener;
 import com.rongyan.aikanvideo.R;
 import com.rongyan.aikanvideo.adapter.MainViewPagerAdapter;
+import com.rongyan.aikanvideo.video.VideoActivity;
 import com.rongyan.rongyanlibrary.base.BaseActivity;
 import com.rongyan.rongyanlibrary.base.BaseFragment;
 
@@ -64,6 +67,7 @@ public class SearchActivity extends BaseActivity implements MaterialSearchView.O
             titleList.add(titles[i]);
         }
         tvPlayFgm = SearchFragment.newInstance(titles[0]);
+        tvPlayFgm.setMaterialSearchView(searchView);
         movieFgm = SearchFragment.newInstance(titles[1]);
         variety = SearchFragment.newInstance(titles[2]);
         fgmList.add(tvPlayFgm);
@@ -123,7 +127,7 @@ public class SearchActivity extends BaseActivity implements MaterialSearchView.O
         movieFgm.setQurey(query);
         variety.setQurey(query);
 
-        tvPresenter.submitQuery(query);
+        tvPresenter.getTelePlay(query);
         moviePresenter.submitQuery(query);
         varietyPresenter.submitQuery(query);
 
@@ -140,6 +144,19 @@ public class SearchActivity extends BaseActivity implements MaterialSearchView.O
     public void onComplete() {
         if (searchView != null && searchView.isOpen()) {
             searchView.closeSearch();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode) {
+            case Activity.RESULT_OK:
+                Bundle extras = data.getExtras();
+                Intent intent = new Intent(this, VideoActivity.class);
+                intent.putExtras(extras);
+                startActivity(intent);
+                break;
         }
     }
 

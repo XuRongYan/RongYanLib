@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/survey_dialog_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="@color/colorPrimary"
+        android:text="@string/why_skip"/>
+
+    <RadioGroup
+        android:id="@+id/survey_dialog_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/why_skip">
+
+        <RadioButton
+            android:id="@+id/survey_dialog_radio_adv_too_long"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/colorPrimary"
+            android:text="@string/dont_like"
+            />
+
+        <RadioButton
+            android:id="@+id/survey_dialog_radio_adv_too_boring"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/colorPrimary"
+            android:text="@string/design_dont_like"
+            />
+
+        <RadioButton
+            android:id="@+id/survey_dialog_radio_adv_not_accept_recommend"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/colorPrimary"
+            android:text="@string/not_accept_recommend"
+            />
+
+
+
+    </RadioGroup>
+
+</LinearLayout>
