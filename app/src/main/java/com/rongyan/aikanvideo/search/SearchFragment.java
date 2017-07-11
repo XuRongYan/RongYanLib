@@ -82,7 +82,7 @@ public class SearchFragment extends BaseFragment implements SearchContract.View{
     @Override
     public void getList(List<Video> list) {
         if (adapter != null) {
-            adapter.addListAtEndAndNotify(list);
+            adapter.replaceList(list);
         } else {
             tmpList = list;
         }
@@ -115,7 +115,7 @@ public class SearchFragment extends BaseFragment implements SearchContract.View{
         for (int i = 0; i < lists.size(); i++) {
             teleplayList.add(lists.get(i).get(0));
         }
-        adapter.addListAtEndAndNotify(teleplayList);
+        adapter.replaceList(teleplayList);
     }
 
     public void setQurey(String qurey) {
@@ -167,11 +167,11 @@ public class SearchFragment extends BaseFragment implements SearchContract.View{
                     //如果相等则说明已经滑动到最后了
                     Log.i("recyclerView", ("lastVisiblePosition" + lastPosition + "ItemCount" + (recyclerView.getLayoutManager().getItemCount() - 1)));
                     if (lastPosition == recyclerView.getLayoutManager().getItemCount() - 1) {
-                        if (title.equals("电视剧")) {
-                            mPresenter.getTelePlay(qurey);
-                        } else {
-                            mPresenter.submitQuery(qurey);
-                        }
+//                        if (title.equals("电视剧")) {
+//                            mPresenter.getTelePlay(qurey);
+//                        } else {
+//                            mPresenter.submitQuery(qurey);
+//                        }
 
                     }
                 }
